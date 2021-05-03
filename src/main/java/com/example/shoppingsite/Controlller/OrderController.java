@@ -24,12 +24,7 @@ public class OrderController {
                               @RequestParam("Address") String Address, @RequestParam("purchase_date") String purchase_date, @RequestParam("Qty") String qty) {
 
         OrderList order = new OrderList();
-        //order.setOrder_id(1);
-//        order.setAddress(Address);
-//        order.setEmail(email);
-//        order.setBrand(brand);
         order.setTotal_amount(total);
-//        order.setDescriptions(description);
         order.setProductname(productname);
         order.setProduct_id(id);
         order.setPurchase_date(purchase_date);
