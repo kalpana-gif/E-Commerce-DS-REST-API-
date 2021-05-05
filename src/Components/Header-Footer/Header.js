@@ -32,7 +32,7 @@ class Header extends Component {
 
         return (
             <div>
-                <Navbar expand="lg" style={{backgroundColor: '#F0F1F3', padding: '20px 50px'}}>
+                <Navbar expand="lg" className={"navigation-bar"}>
                     <Link className="brand-name navbar-brand" to="/">Loire Valley</Link>
                     <Navbar.Toggle aria-controls="basic-navbar-nav" className="ml-auto"/>
                     <Navbar.Collapse id="basic-navbar-nav">
@@ -41,21 +41,21 @@ class Header extends Component {
                             <Link className="navbar-icon" to="/"><FontAwesomeIcon icon={faHome}/></Link>
 
                             {loggedAsOperator &&
-                            <NavDropdown title={<FontAwesomeIcon icon={faBars}/>} style={{marginRight: 100}}
+                            <NavDropdown title={<FontAwesomeIcon icon={faBars}/>} style={{padding:'2px', marginRight:'50px'}}
                                          id="basic-nav-dropdown">
                                 <Link className="dropdown-item" to="/AddItems"><FontAwesomeIcon
-                                    icon={faPlusSquare}/> Add Products</Link>
-                                <Link className="dropdown-item" to="/ViewAll"><FontAwesomeIcon icon={faListAlt}/> View
+                                    icon={faPlusSquare} className={"mr-2"}/> Add Products</Link>
+                                <Link className="dropdown-item" to="/ViewAll"><FontAwesomeIcon icon={faListAlt} className={"mr-2"} /> View
                                     Products</Link>
                                 <Link className="dropdown-item" to="/OrderList"><FontAwesomeIcon
-                                    icon={faClipboardList}/> Order List</Link>
+                                    icon={faClipboardList} className={"mr-2"} /> Order List</Link>
                             </NavDropdown>}
 
                             {loggedAsStudent &&
-                            <NavDropdown title={<FontAwesomeIcon icon={faBars}/>} style={{marginRight: 100}}
+                            <NavDropdown title={<FontAwesomeIcon icon={faBars}/>} style={{padding:'2px', marginRight:'50px'}}
                                          id="basic-nav-dropdown">
                                 <Link className="dropdown-item" to="/ShoppingCart"><FontAwesomeIcon
-                                    icon={faShoppingCart}/>My Cart</Link>
+                                    icon={faShoppingCart} className={"mr-2"} />My Cart</Link>
                             </NavDropdown>}
 
                             {!isUserLoggedIn &&

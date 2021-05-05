@@ -1,6 +1,15 @@
 @import url('https://fonts.googleapis.com/css2?family=Zen+Dots&display=swap');
 @import url('https://fonts.googleapis.com/css2?family=Lexend:wght@100;300;400;500;600;700&display=swap');
 
+.navigation-bar {
+  background-color: #F0F1F3;
+  padding: 20px 50px;
+}
+
+.navigation-bar:hover {
+  background-color: #ffffff;
+}
+
 .brand-name {
   font-family: 'Zen Dots', cursive;
   font-weight: 400;
@@ -12,6 +21,10 @@
   padding: 11px 20px;
   font-family: 'Lexend', sans-serif;
   font-weight: 500;
+}
+
+.navbar-icon:hover {
+  color: #000000;
 }
 
 @media (max-width: 768px) {

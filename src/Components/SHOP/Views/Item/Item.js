@@ -117,6 +117,10 @@ class EcommercePage extends React.Component {
                         <Button className={"load-btn"} variant={"none"} onClick={this.loadMore}>Load More</Button>
                     }
                 </div>
+
+                TODO: Search results needs to comes here
+
+
             </div>
 
         );
