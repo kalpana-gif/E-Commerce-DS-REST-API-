@@ -1,0 +1,102 @@
+@import url('https://fonts.googleapis.com/css2?family=Lexend:wght@100;300;400;500;600;700&display=swap');
+
+@font-face {
+    font-family: 'Lexend', sans-serif;
+}
+
+/* Card Img */
+.card-item-img {
+    opacity: 1;
+}
+
+/* outer div for card */
+.card-div {
+    position: relative;
+}
+
+/* outer div for btn grp */
+.btn-grp-div {
+    position: absolute;
+    height: 0;
+    bottom: 20%;
+    left: 0;
+    right: 0;
+    transition: .5s ease;
+    overflow: hidden;
+    opacity: 0;
+}
+
+.card-div:hover .btn-grp-div {
+    height: 50%;
+    opacity: 1;
+}
+
+/* inner div for btn grp */
+.btn-inner-div {
+    position: absolute;
+    top: 60%;
+    left: 50%;
+    -webkit-transform: translate(-50%, -50%);
+    -ms-transform: translate(-50%, -50%);
+    transform: translate(-50%, -50%);
+}
+
+/* Card Button */
+.card-item-button {
+    margin: 5px;
+    width: 50px;
+    height: 50px;
+    border-radius: 50%;
+    border-color: #000000;
+    background-color: #000000;
+    color: #ffffff;
+}
+
+/* Card Button */
+.card-item-button:hover {
+    color: #ffffff;
+    background-color: #000000;
+}
+
+/* card title */
+.product-title {
+    font-family: 'Lexend', sans-serif;
+    font-size: 1em;
+    color: #000000;
+    font-weight: 400;
+}
+
+/* card subtitle */
+.product-price {
+    font-family: 'Lexend', sans-serif;
+    font-size: 1em;
+    color: #000000;
+    font-weight: 500;
+}
+
+/*.product-desc {*/
+/*    font-family: 'Lexend', sans-serif;*/
+/*    font-size: 1em;*/
+/*    color: #000000;*/
+/*    font-weight: 300;*/
+/*}*/
+
+/* load more button */
+.load-btn {
+    font-family: 'Lexend', sans-serif;
+    font-weight: 400;
+    padding: 15px 50px;
+    margin: 50px;
+    color: #ffffff;
+    background-color: #1d1d1d;
+    border: none;
+    border-radius: 0;
+}
+
+/* load more button hover */
+.load-btn:hover {
+    color: #ffffff;
+    background-color: #000000;
+}
+
+

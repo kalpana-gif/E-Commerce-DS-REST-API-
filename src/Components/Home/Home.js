@@ -1,0 +1,63 @@
+import React, {Component} from 'react';
+import './Home.css';
+import {Button, Carousel, Container, Nav} from 'react-bootstrap';
+import Item from "../SHOP/Views/Item/Item";
+
+export default class Home extends Component {
+    state = {}
+
+    render() {
+        return (
+            <div>
+
+            {/* --------------------------Carousel-------------------------- */}
+                <Carousel fade
+                    controls={false}>
+                    <Carousel.Item >
+                        <img
+                            className="d-block w-100"
+                            src={require('../../Assets/ss1.jpg')}
+                            alt="First slide"
+                        />
+                        <Carousel.Caption style={{top:'45%'}}>
+                            <h3 className={"carousel-title"}>New Arrivals</h3>
+                            <Button variant={"none"} className={"carousel-subtitle"}>Woman Collection</Button>
+                            <Button variant={"none"} className={"carousel-subtitle"}>Man Collection</Button>
+                        </Carousel.Caption>
+                    </Carousel.Item>
+
+                    <Carousel.Item>
+                        <img
+                            className="d-block w-100"
+                            src={require('../../Assets/ss2.jpg')}
+                            alt="First slide"
+                        />
+                        <Carousel.Caption style={{top:'45%', right:'50%'}}>
+                            <h3 className={"carousel-title"}>Shoe Collection</h3>
+                            <Button variant={"none"} className={"carousel-subtitle"}>Shop Now</Button>
+                        </Carousel.Caption>
+                    </Carousel.Item>
+                </Carousel>
+
+                {/* --------------------------Navbar-------------------------- */}
+                <Nav activeKey={"#woman"} className="justify-content-center my-3">
+                    <Nav.Item>
+                        <Nav.Link href={"#woman"} className={"sub-nav-item"}>Woman Collection</Nav.Link>
+                    </Nav.Item>
+                    <Nav.Item>
+                        <Nav.Link href={"#man"} className={"sub-nav-item"}>Man Collection</Nav.Link>
+                    </Nav.Item>
+                    <Nav.Item>
+                        <Nav.Link href={"#shoe"} className={"sub-nav-item"}>Shoe Collection</Nav.Link>
+                    </Nav.Item>
+                </Nav>
+
+                {/* --------------------------Shop Items-------------------------- */}
+                <div className={"my-3"}>
+                    <Item/>
+                </div>
+
+            </div>
+        );
+    }
+}
