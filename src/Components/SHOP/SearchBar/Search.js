@@ -2,24 +2,13 @@ import React, {Component} from "react";
 import './Search.css';
 import Form from 'react-bootstrap/Form'
 import axios from "axios";
-import {
-    MDBAlert,
-    MDBCard,
-    MDBCardBody,
-    MDBCardImage,
-    MDBCardText,
-    MDBCardTitle,
-    MDBContainer,
-    MDBRow,
-    MDBTooltip
-} from "mdbreact";
 import AuthenticationService from "../../Authentication/AuthenticationService";
 import {FontAwesomeIcon} from "@fortawesome/react-fontawesome";
 import {faHeart, faSearch, faShoppingCart} from "@fortawesome/free-solid-svg-icons";
-import {Button, Card, Row} from "react-bootstrap";
+import {Button, Card, Col, Row} from "react-bootstrap";
+import Item from "../Views/Item/Item";
 
-
-class NavbarPage extends Component {
+class Search extends Component {
     constructor(props) {
         super(props);
         this.state = {
@@ -27,6 +16,7 @@ class NavbarPage extends Component {
             Item: '',
             id: '',
             visible: 10,
+            search: '',
             customerId: AuthenticationService.loggedUserId(),//we need customer id to find the items
         }
 
@@ -38,6 +28,8 @@ class NavbarPage extends Component {
 
 
     handleSearch(event) {
+        event.preventDefault();
+
         this.setState({search: event.target.value});
     }
 
@@ -47,18 +39,18 @@ class NavbarPage extends Component {
 
 
             .then(res => {
-                console.log(this.state.Product)
                 this.setState({
                     Product: true,
                     Item: res.data,
                     id: res.data.id
                 });
+                console.log(this.state.Item)
+
 
 
             }).catch(function (error) {
             console.log(error);
         })
-
     }
 
     buyBytnclicked(id) {
@@ -81,19 +73,33 @@ class NavbarPage extends Component {
         let timerInterval
         // console.log("GGG"+this.state.Product)
 
-        if (this.state.Product == false) {
+        if (this.state.Product === false) {
 
             console.log("HHH")
             return (
                 <div>
                     {/*<Nav><Nav.Link href="/ShoppingCart"><i className="fas fa-cart-plus"></i> CART</Nav.Link></Nav>*/}
-                    <Form inline onSubmit={this.handleSubmit}>
-                        <div className={"search"}>
-                            <input type="text" placeholder="Search" className="searchInput" onChange={this.handleSearch}
-                                   required={true}/>
-                            <button type="submit" className="searchButton"><FontAwesomeIcon icon={faSearch}/></button>
-                        </div>
-                    </Form>
+
+                    {/*--------------------------Navbar--------------------------*/}
+                    <div>
+                        <Row className={"align-items-center px-5 py-4"}>
+                            <Col>
+                                <Button variant={"none"} className={"sub-nav-item"} >All</Button>
+                                <Button variant={"none"} className={"sub-nav-item"} >Woman Collection</Button>
+                                <Button variant={"none"} className={"sub-nav-item"} >Man Collection</Button>
+                                <Button variant={"none"} className={"sub-nav-item"} >Shoe Collection</Button>
+                            </Col>
+                            <Col md="auto" >
+                                <Form inline onSubmit={this.handleSubmit}>
+                                    <div className={"search"}>
+                                        <input type="text" placeholder="Search" className="searchInput" onChange={this.handleSearch}
+                                               required={true}/>
+                                        <button type="submit" className="searchButton"><FontAwesomeIcon icon={faSearch}/></button>
+                                    </div>
+                                </Form>
+                            </Col>
+                        </Row>
+                    </div>
 
                 </div>
 
@@ -102,27 +108,52 @@ class NavbarPage extends Component {
 
         } else {
 
+            console.log(this.state.Item.id);
+
+
             return (
                 <div>
                     {/*<Nav><Nav.Link href="/ShoppingCart"><i className="fas fa-cart-plus"></i> CART</Nav.Link></Nav>*/}
 
-                    <Form inline onSubmit={this.handleSubmit}>
-                        <div className={"search"}>
-                            <input type="text" placeholder="Search" className="searchInput" onChange={this.handleSearch}
-                                   required={true}/>
-                            <button type="submit" className="searchButton"><FontAwesomeIcon icon={faSearch}/></button>
-                        </div>
-                    </Form>
+                    {/*<Item result = {this.state.visible}/>*/}
+
+
+                    {/*--------------------------Navbar--------------------------*/}
+                    <div>
+                        <Row className={"align-items-center px-5 py-4"}>
+                            <Col>
+                                <Button variant={"none"} className={"sub-nav-item"} >All</Button>
+                                <Button variant={"none"} className={"sub-nav-item"} >Woman Collection</Button>
+                                <Button variant={"none"} className={"sub-nav-item"} >Man Collection</Button>
+                                <Button variant={"none"} className={"sub-nav-item"} >Shoe Collection</Button>
+                            </Col>
+                            <Col md="auto" >
+                                <Form inline onSubmit={this.handleSubmit}>
+                                    <div className={"search"}>
+                                        <input type="text" placeholder="Search" className="searchInput" onChange={this.handleSearch}
+                                               required={true}/>
+                                        <button type="submit" className="searchButton"><FontAwesomeIcon icon={faSearch}/></button>
+                                    </div>
+                                </Form>
+                            </Col>
+                        </Row>
+                    </div>
+
+
 
                     {/*<MDBAlert color="warning" dismiss>*/}
                     {/*    <strong>Searched Items </strong>Pick your items right now.*/}
                     {/*</MDBAlert>*/}
 
+                    {/*<Item searchResults = {this.state.id} />*/}
+
+
                     <div className={"my-5 px-2"}>
+
                         <Row className="justify-content-md-center">
                             {this.state.Item.slice(0,this.state.visible).map( item =>
 
-                                <Card style={{width: '21rem', border:'none'}} className={"card-div mx-3"}>
+                                <Card style={{width: '21rem', border:'none'}} className={"card-div mx-3"} key={item.id}>
                                     <Card.Img variant={"top"} className={"card-item-img"}
                                               src={`data:image/jpeg;base64,${item.picture}`} />
                                     <div className={"text-center btn-grp-div"}>
@@ -145,11 +176,7 @@ class NavbarPage extends Component {
 
                         </Row>
 
-                        <div className={"text-center"}>
-                            { this.state.visible < this.state.Product.length &&
-                            <Button className={"load-btn"} variant={"none"} onClick={this.loadMore}>Load More</Button>
-                            }
-                        </div>
+                        <hr/>
 
                     </div>
 
@@ -229,4 +256,4 @@ class NavbarPage extends Component {
 
 }
 
-export default NavbarPage;
+export default Search;

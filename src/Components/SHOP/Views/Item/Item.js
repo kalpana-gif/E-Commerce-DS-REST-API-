@@ -1,14 +1,4 @@
 import React from 'react';
-import {
-    MDBCard,
-    MDBCardBody,
-    MDBCardImage,
-    MDBCardText,
-    MDBCardTitle,
-    MDBContainer,
-    MDBRow,
-    MDBTooltip,
-} from 'mdbreact';
 import './item.css'
 import '@fortawesome/fontawesome-free/css/all.min.css';
 import axios from "axios";
@@ -30,7 +20,7 @@ class EcommercePage extends React.Component {
             Product: [],
             customerId: AuthenticationService.loggedUserId(),
             repeat: '',
-            visible: 10
+            visible: 10,
         }
 
         this.buyBytnclicked = this.buyBytnclicked.bind(this);
@@ -81,15 +71,16 @@ class EcommercePage extends React.Component {
         })
     }
 
-
     render() {
+        console.log(this.props.searchResults);
+
         return (
             // Row include 5 items
             <div className={"my-5 px-2"}>
                 <Row className="justify-content-md-center">
                     {this.state.Product.slice(0,this.state.visible).map( item =>
 
-                        <Card style={{width: '21rem', border:'none'}} className={"card-div mx-3"}>
+                        <Card style={{width: '21rem', border:'none'}} className={"card-div mx-3"} key={item.id}>
                             <Card.Img variant={"top"} className={"card-item-img"}
                                       src={`data:image/jpeg;base64,${item.picture}`} />
                             <div className={"text-center btn-grp-div"}>
@@ -118,7 +109,7 @@ class EcommercePage extends React.Component {
                     }
                 </div>
 
-                TODO: Search results needs to comes here
+                {/*TODO: Search results needs to comes here*/}
 
 
             </div>

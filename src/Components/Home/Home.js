@@ -1,7 +1,8 @@
 import React, {Component} from 'react';
 import './Home.css';
-import {Button, Carousel, Container, Nav} from 'react-bootstrap';
+import {Button, Carousel, Col, Container, Nav, Row} from 'react-bootstrap';
 import Item from "../SHOP/Views/Item/Item";
+import Search from "../SHOP/SearchBar/Search";
 
 export default class Home extends Component {
     state = {}
@@ -39,23 +40,20 @@ export default class Home extends Component {
                     </Carousel.Item>
                 </Carousel>
 
-                {/* --------------------------Navbar-------------------------- */}
-                <Nav activeKey={"#woman"} className="justify-content-center my-3">
-                    <Nav.Item>
-                        <Nav.Link href={"#woman"} className={"sub-nav-item"}>Woman Collection</Nav.Link>
-                    </Nav.Item>
-                    <Nav.Item>
-                        <Nav.Link href={"#man"} className={"sub-nav-item"}>Man Collection</Nav.Link>
-                    </Nav.Item>
-                    <Nav.Item>
-                        <Nav.Link href={"#shoe"} className={"sub-nav-item"}>Shoe Collection</Nav.Link>
-                    </Nav.Item>
-                </Nav>
+
+
+                <Search />
+
+                <Item/>
 
                 {/* --------------------------Shop Items-------------------------- */}
-                <div className={"my-3"}>
-                    <Item/>
-                </div>
+                {/*<div className={"my-3"}>*/}
+                {/*    <Container>*/}
+
+                {/*        */}
+                {/*    </Container>*/}
+                {/*    /!*<Item/>*!/*/}
+                {/*</div>*/}
 
             </div>
         );

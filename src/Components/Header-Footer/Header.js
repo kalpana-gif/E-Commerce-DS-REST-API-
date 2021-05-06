@@ -37,8 +37,8 @@ class Header extends Component {
                     <Navbar.Toggle aria-controls="basic-navbar-nav" className="ml-auto"/>
                     <Navbar.Collapse id="basic-navbar-nav">
                         <Nav className="ml-auto">
-                            <Search/>
-                            <Link className="navbar-icon" to="/"><FontAwesomeIcon icon={faHome}/></Link>
+                            {/*<Search/>*/}
+                            <Link className="navbar-icon" to="/"><FontAwesomeIcon icon={faShoppingCart}/></Link>
 
                             {loggedAsOperator &&
                             <NavDropdown title={<FontAwesomeIcon icon={faBars}/>} style={{padding:'2px', marginRight:'50px'}}

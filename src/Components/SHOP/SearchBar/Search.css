@@ -1,57 +1,40 @@
 @import url('https://fonts.googleapis.com/css2?family=Lexend:wght@100;300;400;500;600;700&display=swap');
 
 .search {
-    display: inline-block;
-    position: relative;
-    height: 60px;
-    float: right;
-    padding: 0;
+    padding: 20px;
 }
 
 .searchButton {
-    height: 50px;
-    width: 50px;
-    display: inline-block;
-    float: right;
-    color: #000000;
+    color: #9a9a9a;
     background: transparent;
-    border: none;
-    position: absolute;
-    top: 0;
-    right: 0;
+    border: 2px solid #9a9a9a;
+    border-radius: 0 50px 50px 0;
+    border-left: none;
+    padding: 10px 20px;
     z-index: 2;
     cursor: pointer;
-    transition: opacity .4s ease;
 }
 
 .searchInput {
-    height: 50px;
-    display: inline-block;
+    width: 500px;
     font-family: 'Lexend', sans-serif;
     font-weight: 400;
-    border: none;
-    outline: none;
+    border: 2px solid #9a9a9a;
+    border-radius: 50px 0 0 50px;
+    border-right: none;
     color: #000000;
-    padding: 3px 60px 3px 3px;
-    width: 0;
-    position: absolute;
-    top: 0;
-    right: 0;
-    background: none;
+    padding: 10px 20px;
     z-index: 3;
-    transition: width .4s cubic-bezier(0.000, 0.795, 0.000, 1.000);
     cursor: pointer;
 }
 
 .searchInput:focus {
-    width: 700px;
-    z-index: 1;
-    border-bottom: 2px solid #000000;
+    outline: none;
     cursor: text;
 }
 
 .searchButton:hover {
-    opacity: 0.8;
+    color: #000000;
 }
 
 .searchButton:focus {

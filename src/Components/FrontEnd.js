@@ -16,6 +16,7 @@ import EditItem from "./SHOP/Views/ShopAdmin/EditItem";
 
 import OrderList from "./SHOP/Views/ShopAdmin/OrderList";
 import Payment from "./SHOP/Views/Cart/Payment";
+import Item from "./SHOP/Views/Item/Item";
 
 class FrontEnd extends Component {
 
@@ -35,6 +36,7 @@ class FrontEnd extends Component {
 
 
                         <Route path="/" exact component={Home}/>
+                        <Route path="/:id" exact component={Item}/>
                         <Route path="/login" component={Login}/>
                         <Route path="/logout" component={Login}/>
                         <Route path="/ViewAll/logout" component={Login}/>
