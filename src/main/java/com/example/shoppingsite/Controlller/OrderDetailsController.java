@@ -2,6 +2,7 @@ package com.example.shoppingsite.Controlller;
 
 import com.example.shoppingsite.Model.OrderDetails;
 import com.example.shoppingsite.Repository.OrderDetailsRepository;
+
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.*;
 
@@ -11,7 +12,6 @@ import java.util.List;
 @CrossOrigin(origins = "http://localhost:3000")
 @RequestMapping("/OrderDetailsController")
 public class OrderDetailsController {
-
     @Autowired
     OrderDetailsRepository orderDetailsRepository;
 
