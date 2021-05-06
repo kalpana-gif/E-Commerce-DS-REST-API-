@@ -36,7 +36,6 @@ class FrontEnd extends Component {
 
 
                         <Route path="/" exact component={Home}/>
-                        <Route path="/:id" exact component={Item}/>
                         <Route path="/login" component={Login}/>
                         <Route path="/logout" component={Login}/>
                         <Route path="/ViewAll/logout" component={Login}/>
