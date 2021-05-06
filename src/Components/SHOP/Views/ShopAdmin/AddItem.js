@@ -1,125 +1,113 @@
 import React, {Component} from "react";
-import {
-    MDBContainer,
-    MDBRow,
-    MDBCol,
-    MDBBtn,
-    MDBCard,
-    MDBCardBody,
-    MDBCardHeader,
-    MDBCardImage,
-    MDBIcon
-} from 'mdbreact';
 import axios from "axios";
+import './ShopAdmin.css';
 import swal from "sweetalert";
+import {Button, Card, Col, Container, Row} from "react-bootstrap";
+import {FontAwesomeIcon} from "@fortawesome/react-fontawesome";
+import {faTrash} from "@fortawesome/free-solid-svg-icons/faTrash";
 
 
-class UploadItems extends React.Component {
+class UploadItems extends Component {
 
     constructor(props) {
-        super( props );
+        super(props);
         this.state = {
             productname: '',
             id: '',
             brand: '',
             catogeory: '',
             description: '',
-            // products:''
             price: '',
             qty: 0,
             image: '',
             imageURL: ' ',
-            imageName: ' ',
+            imageName: 'Choose file',
             imageURLValidation: false,
         }
 
+        this.handleSubmit = this.handleSubmit.bind(this);
+        this.handleChangeBrandName = this.handleChangeBrandName.bind(this);
+        this.handleChangeProductName = this.handleChangeProductName.bind(this);
+        this.handleChangeID = this.handleChangeID.bind(this);
+        this.handleChangeCatogory = this.handleChangeCatogory.bind(this);
+        this.handleChangeDescription = this.handleChangeDescription.bind(this);
+        this.handleChangeQty = this.handleChangeQty.bind(this);
+        this.handleChangePrice = this.handleChangePrice.bind(this);
+        this.onchangeFile = this.onchangeFile.bind(this);
+        this.removePhoto = this.removePhoto.bind(this);
 
-        // this.refreshProducts=this.refreshProducts.bind(this);
-        this.handleSubmit = this.handleSubmit.bind( this );
-        this.handleChangeProductName = this.handleChangeProductName.bind( this );
-        this.handleChangeID = this.handleChangeID.bind( this );
-        this.handleChangeCatogory = this.handleChangeCatogory.bind( this );
-        this.handleChangeBrandName = this.handleChangeBrandName.bind( this );
-        this.handleChangeDescription = this.handleChangeDescription.bind( this );
-        this.handleChangeQty = this.handleChangeQty.bind( this );
-        this.handleChangePrice = this.handleChangePrice.bind( this );
-        this.onchangeFile = this.onchangeFile.bind( this );
-        this.removePhoto = this.removePhoto.bind( this );
-
+    }
+    handleChangeBrandName() {
+        this.setState({brand: 'none'});
     }
 
     handleChangeProductName(event) {
-        this.setState( {productname: event.target.value} );
+        this.setState({productname: event.target.value});
     }
 
     handleChangeID(event) {
-        this.setState( {id: event.target.value} );
+        this.setState({id: event.target.value});
     }
 
     handleChangeCatogory(event) {
-        this.setState( {catogeory: event.target.value} );
-    }
-
-    handleChangeBrandName(event) {
-        this.setState( {brand: event.target.value} );
+        this.setState({catogeory: event.target.value});
     }
 
     handleChangeDescription(event) {
-        this.setState( {description: event.target.value} );
+        this.setState({description: event.target.value});
     }
 
     handleChangeQty(event) {
-        this.setState( {qty: event.target.value} );
+        this.setState({qty: event.target.value});
     }
 
     handleChangePrice(event) {
-        this.setState( {price: event.target.value} );
+        this.setState({price: event.target.value});
     }
 
 
     async handleSubmit(event) {
 
-
-        swal( {
-            title: "Good job!",
-            text: "You clicked the button!",
-            icon: "success",
-            timmer: 1,
-        } );
         event.preventDefault();
         let formData = new FormData();
-        formData.append( 'productname', this.state.productname );
-        formData.append( 'id', this.state.id );
-        formData.append( 'brand', this.state.brand );
-        formData.append( 'catogeory', this.state.catogeory );
-        formData.append( 'description', this.state.description );
-        formData.append( 'file', this.state.image );
-        formData.append( 'qty', this.state.qty );
-        formData.append( 'price', this.state.price );
+        formData.append('productname', this.state.productname);
+        formData.append('id', this.state.id);
+        formData.append('brand', this.state.brand);
+        formData.append('catogeory', this.state.catogeory);
+        formData.append('description', this.state.description);
+        formData.append('file', this.state.image);
+        formData.append('qty', this.state.qty);
+        formData.append('price', this.state.price);
 
-        console.log( formData )
+        console.log(formData)
 
         /* validation foe minus values*/
 
         if (this.state.price < 0 && this.state.qty > 0) {
-            swal( "check the price" );
+            swal("check the price");
 
         } else if (this.state.price > 0 && this.state.qty < 0) {
 
-            swal( "check the qty!" );
+            swal("check the qty!");
         } else {
 
 
-            axios.post( `http://localhost:8080/productController/product`, formData )
+            axios.post(`http://localhost:8080/productController/product`, formData)
 
-                .then( res => {
-                    console.log( formData )
-                    console.log( res )
-                    console.log( res.data );
-                    this.props.history.push( '/ViewAll/' );
+                .then(res => {
+                    console.log(formData)
+                    console.log(res)
+                    console.log(res.data);
+                    this.props.history.push('/ViewAll/');
 
-                } )
+                    swal({
+                        title: "Great !",
+                        text: "Item Added Successfully!",
+                        icon: "success",
+                        timmer: 1,
+                    });
 
+                })
         }
 
         console.log(this.state.image)
@@ -129,190 +117,151 @@ class UploadItems extends React.Component {
     onchangeFile(e) {
 
         // if (URL.createObjectURL(e.target.files[0]) !== ' ') {
+
         if (e.target.files.length) {
-            this.setState( {
+            this.setState({
                 image: e.target.files[0],
-                imageUrl: URL.createObjectURL( e.target.files[0] ),
+                imageUrl: URL.createObjectURL(e.target.files[0]),
                 imageName: e.target.files[0].name,
                 imageURLValidation: true,
-            } );
+            });
         }
 
 
     }
 
     removePhoto() {
-        this.setState( {
+        this.setState({
             image: ' ',
             imageUrl: ' ',
             imageURLValidation: false,
-            imageName: ' '
-        } )
+            imageName: 'Choose file'
+        })
 
     }
-
 
     render() {
 
         return (
-            <div style={{background: "#45454559"}}>
-                <MDBContainer>
-                    <MDBRow className={"justify-content-center"}>
-                        <MDBCol size={8}>
-                            <MDBCard style={{marginTop: "1rem"}}>
-                                <MDBCardHeader className="text-center"
-                                               style={{backgroundColor: "gray", color: "white"}}>Add
-                                    Products</MDBCardHeader>
-                                <MDBCardBody>
+            <Container className={"my-5 py-4"}>
+                {/*<div className={"adminCardTitle text-center"}>Add Item</div>*/}
 
-                                    <form onSubmit={this.handleSubmit}>
-                                        <MDBRow center>
-                                            <MDBCol size="4">
+                <Card className={"adminCard"}>
+                    <div className={"text-center adminCardTitle"}>Add Product</div>
+                    <Card.Body className={"m-3"}>
+                        <form onSubmit={this.handleSubmit}>
+                            <Row>
+                                <Col style={{maxWidth: '500px'}} >
+                                    {
+                                        this.state.imageURLValidation ?
 
-                                                {
-                                                    this.state.imageURLValidation ?
-                                                        <MDBCol style={{maxWidth: "14rem"}}>
-                                                            <MDBCard>
-                                                                <MDBCardImage className="img-fluid "
-                                                                              src={this.state.imageUrl}
-                                                                              waves/>
-                                                            </MDBCard>
-                                                        </MDBCol>
-
-                                                        : ''
-                                                }
-
-
-                                            </MDBCol>
-
-                                        </MDBRow>
-                                        <br/>
-                                        {/*//display photo*/}
-                                        <MDBRow center>
-                                            <MDBCol size="8">
-
-                                                <div className="input-group">
-                                                    <div className="input-group-prepend">
-                                                    <span className="input-group-text" id="inputGroupFileAddon01">
-                                                              Upload
-                                                    </span>
-                                                    </div>
-                                                    <div className="custom-file">
-                                                        <input
-
-                                                            type="file"
-                                                            className="custom-file-input"
-                                                            id="inputGroupFile01"
-                                                            aria-describedby="inputGroupFileAddon01"
-                                                            onChange={this.onchangeFile}
-                                                            required={true}
-                                                        />
-                                                        <label className="custom-file-label" htmlFor="inputGroupFile01">
-                                                            {this.state.imageName}
-                                                        </label>
-                                                    </div>
-                                                </div>
-                                            </MDBCol>
-
-                                            {/*remove photo when its added*/}
-                                            <MDBCol size={"1"}>
-                                                {
-                                                    this.state.imageURLValidation ?
-                                                        <MDBBtn onClick={this.removePhoto}><MDBIcon icon="trash"
-                                                                                                    style={{color: 'red'}}/></MDBBtn> : ''
-                                                }
-                                            </MDBCol>
-                                        </MDBRow>
-
-
-                                        {/*///////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////*/}
-                                        <MDBRow center={true}>
-
-                                            <MDBCol md="10">
-
-                                                {/*<p className="h4 text-center mb-4"></p>*/}
-                                                <label htmlFor="productname" className="grey-text ">
-                                                    Product name
+                                            <Card.Img variant="top" src={this.state.imageUrl}/>
+                                            : <Card.Img variant="top" src={require('../../../../Assets/noimg.jpg')}/>
+                                    }
+                                    <Row className={"mx-0 mt-4"}>
+                                        <Col className={"p-0"}>
+                                            <div className="custom-file">
+                                                <input
+                                                    type="file"
+                                                    className="custom-file-input"
+                                                    id="inputGroupFile01"
+                                                    aria-describedby="inputGroupFileAddon01"
+                                                    onChange={this.onchangeFile}
+                                                    required={true}
+                                                />
+                                                <label className="custom-file-label" htmlFor="inputGroupFile01">
+                                                    {this.state.imageName}
                                                 </label>
-                                                <input type="text" id="productname" name="productname"
-                                                       className="form-control"
-                                                       onChange={this.handleChangeProductName}/>
-                                                <br/>
-                                                <label htmlFor="productId" className="grey-text">
-                                                    Product ID
-                                                </label>
-                                                <input type="text" id="productId" name="id" className="form-control"
-                                                       required={true}
-                                                       onChange={this.handleChangeID}/>
-                                                <br/>
-                                                <label htmlFor="productQTY" className="grey-text">
-                                                    Product QTY
-                                                </label>
-                                                <input type="number" id="productQTY" name="qty" className="form-control"
-                                                       onChange={this.handleChangeQty}/>
-                                                <br/>
-                                                <label htmlFor="productPrice" className="grey-text">
-                                                    Price
-                                                </label>
-                                                <input type="" id="productPrice" name="price" className="form-control"
-                                                       onChange={this.handleChangePrice}/>
-                                                <br/>
+                                            </div>
+                                        </Col>
+                                        {/*remove photo when its added*/}
+                                        {
+                                            this.state.imageURLValidation ?
+                                                <Col className={"text-right p-0"} md={2}>
+                                                    <Button variant={"danger"}
+                                                            onClick={this.removePhoto}>
+                                                        <FontAwesomeIcon icon={faTrash}/>
+                                                    </Button>
+                                                </Col> : ''
+                                        }
+                                    </Row>
+
+                                </Col>
+
+                                {/*///////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////*/}
+
+                                <Col>
+                                    <div className={"mb-3"}>
+                                        <label htmlFor="productId" className="grey-text">
+                                            Item ID
+                                        </label>
+                                        <input type="text" id="productId" name="id" className="form-control"
+                                               required={true}
+                                               onChange={this.handleChangeID}/>
+                                    </div>
+
+                                    <div className={"mb-3"}>
+                                        <label htmlFor="productname" className="grey-text ">
+                                            Item name
+                                        </label>
+                                        <input type="text" id="productname" name="productname" className="form-control"
+                                               required={true}
+                                               onChange={this.handleChangeProductName}/>
+                                    </div>
+
+                                    <Row className={"mb-3"}>
+                                        <Col>
+                                            <label htmlFor="productQTY" className="grey-text">
+                                                Quantity
+                                            </label>
+                                            <input type="number" id="productQTY" name="qty" className="form-control"
+                                                   onChange={this.handleChangeQty}/>
+                                        </Col>
+                                        <Col>
+                                            <label htmlFor="productPrice" className="grey-text">
+                                                Price
+                                            </label>
+                                            <input type="" id="productPrice" name="price" className="form-control"
+                                                   onChange={this.handleChangePrice}/>
+                                        </Col>
+                                    </Row>
 
 
-                                                <label htmlFor="brand" className="grey-text">
-                                                    Brand
-                                                </label>
-
-                                                <select className="browser-default custom-select" id="brand"
-                                                        name="brand"
-                                                        onChange={this.handleChangeBrandName}>
-                                                    <option value="no brand">Choose your option</option>
-                                                    <option value="Adidas">Adidas</option>
-                                                    <option value="Nike">Nike</option>
-                                                    <option value="Puma">Puma</option>
-                                                    <option value="other">Other</option>
-                                                </select>
-
-                                                {/*<input type="select" id="defaultFormContactSubjectEx" className="form-control" />*/}
-
-                                                <br/>
-                                                <label htmlFor="catogeory" className="grey-text">
-                                                    Catogeory
-                                                </label>
-                                                <select className="browser-default custom-select" id="catogeory"
-                                                        name="catogeory" onChange={this.handleChangeCatogory}>
-                                                    <option value="other">Choose your option</option>
-                                                    <option value="Clothing">Clothing</option>
-                                                    <option value="Protection">Protection</option>
-                                                    <option value="Books">Books</option>
-                                                </select>
-
-                                                <br/>
-                                                <label htmlFor="description" className="grey-text">
-                                                    Description
-                                                </label>
-                                                <textarea type="text" id="description" name="description"
-                                                          className="form-control" rows="3"
-                                                          onChange={this.handleChangeDescription}/>
-
-                                                <div className="text-center mt-4">
-                                                    <MDBBtn color="warning" type="submit"
-                                                            style={{width: '100%', color: 'white'}}>ADD</MDBBtn>
-                                                </div>
-                                            </MDBCol>
-                                        </MDBRow>
-                                    </form>
-
-                                </MDBCardBody>
-                            </MDBCard>
-                        </MDBCol>
-
-                    </MDBRow>
-
-                </MDBContainer>
+                                    <div className={"mb-3"}>
+                                        <label htmlFor="catogeory" className="grey-text">
+                                            Category
+                                        </label>
+                                        <select className="browser-default custom-select" id="catogeory"
+                                                name="catogeory" onChange={this.handleChangeCatogory}>
+                                            <option>Choose your option</option>
+                                            <option value="Clothing">Men Clothing</option>
+                                            <option value="Protection">Women Clothing</option>
+                                            <option value="Books">Shoes</option>
+                                        </select>
+                                    </div>
 
 
-            </div>
+                                    <div className={"mb-3"}>
+                                        <label htmlFor="description" className="grey-text">
+                                            Description
+                                        </label>
+                                        <textarea id="description" name="description"
+                                                  className="form-control" rows="7"
+                                                  onChange={this.handleChangeDescription}/>
+                                    </div>
+
+
+                                    <div className={"text-right"}>
+                                        <Button variant={"primary"} type={"submit"}>Add Item</Button>
+                                    </div>
+
+                                </Col>
+                            </Row>
+                        </form>
+                    </Card.Body>
+                </Card>
+            </Container>
+
         );
     }
 

@@ -1,0 +1,21 @@
+body {
+    background-color: rgba(240, 241, 243, 0.3);
+}
+
+.adminCardTitle {
+    margin-bottom: 10px;
+    padding: 30px 10px;
+    font-size: 2em;
+    color: #fff;
+    background-color: #000000;
+    border: none;
+    border-radius: 10px 10px 0 0;
+}
+
+.adminCard {
+    border: none;
+    border-radius: 10px;
+    margin-bottom: 50px;
+    box-shadow: 1px 5px 10px rgba(0, 0, 0, 0.2);
+}
+
