@@ -1,0 +1,8 @@
+POST http://localhost:8080/Feedback/Email
+Content-Type: application/json
+
+{
+  "name": "Minindu",
+  "email": "minindu.uk@gmail.com",
+  "feedback": "Your order is completed"
+}
