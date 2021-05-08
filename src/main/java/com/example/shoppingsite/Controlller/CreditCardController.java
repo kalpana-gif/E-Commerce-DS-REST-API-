@@ -1,12 +1,9 @@
 package com.example.shoppingsite.Controlller;
 
 import com.example.shoppingsite.Model.CreditCardDummy;
-import com.example.shoppingsite.Repository.CreditCardCummyRepository;
+import com.example.shoppingsite.Repository.CreditCardDummyRepository;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.web.bind.annotation.CrossOrigin;
-import org.springframework.web.bind.annotation.GetMapping;
-import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.RestController;
+import org.springframework.web.bind.annotation.*;
 
 import java.util.List;
 
@@ -16,10 +13,15 @@ import java.util.List;
 public class CreditCardController {
 
     @Autowired
-    private CreditCardCummyRepository creditCardCummyRepository;
+    private CreditCardDummyRepository creditCardDummyRepository;
 
     @GetMapping("/getAll")
     public List<CreditCardDummy> getAllCreditCards(){
-        return creditCardCummyRepository.findAll();
+        return creditCardDummyRepository.findAll();
+    }
+
+    @GetMapping("/getSecretNumber/{cardNo}")
+    public CreditCardDummy getSecretNumber(@PathVariable String cardNo){
+        return creditCardDummyRepository.getSecretNumber(cardNo);
     }
 }

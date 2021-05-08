@@ -1,7 +1,7 @@
 package com.example.shoppingsite.Controlller;
 
 import com.example.shoppingsite.Model.Delivery;
-import com.example.shoppingsite.Service.DeliveryService;
+import com.example.shoppingsite.Repository.DeliveryRepository;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.*;
 
@@ -13,15 +13,15 @@ import java.util.List;
 public class DeliveryController {
 
     @Autowired
-    DeliveryService deliveryService;
+    DeliveryRepository deliveryRepository;
 
     @PostMapping("/adddelivery")
     public Delivery createDelivery(@RequestBody Delivery delivery){
-        return deliveryService.addDelivery(delivery);
+        return deliveryRepository.save(delivery);
     }
 
     @GetMapping("/getAll")
     public List<Delivery> getAll(){
-        return deliveryService.getAll();
+        return deliveryRepository.findAll();
     }
 }
