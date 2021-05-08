@@ -38,8 +38,8 @@ public class FeedbackController {
 
         //create an email instance
         SimpleMailMessage mailMessage = new SimpleMailMessage();
-        mailMessage.setFrom(emailFeedback.getEmail());
-        mailMessage.setTo("it19184036@my.sliit.lk");
+        mailMessage.setFrom("it19184036@my.sliit.lk");
+        mailMessage.setTo(emailFeedback.getEmail());
         mailMessage.setSubject("Payment Successful");
         mailMessage.setText(emailFeedback.getFeedback());
 
