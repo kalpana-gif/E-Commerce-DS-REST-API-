@@ -7,6 +7,7 @@ import org.springframework.data.repository.query.Param;
 
 public interface MobileBillDummyRepository extends JpaRepository <MobileBillDummy, String> {
 
+
     @Query(value = "SELECT * from MobileBillDummy where mobileNo=:mobileNo ", nativeQuery = true)
     MobileBillDummy getPinNumber(@Param("mobileNo") String mobileNo);
 }
