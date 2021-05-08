@@ -12,6 +12,7 @@ import java.util.List;
 @RequestMapping("/DeliveryController")
 public class DeliveryController {
 
+
     @Autowired
     DeliveryRepository deliveryRepository;
 
@@ -24,4 +25,5 @@ public class DeliveryController {
     public List<Delivery> getAll(){
         return deliveryRepository.findAll();
     }
+
 }
