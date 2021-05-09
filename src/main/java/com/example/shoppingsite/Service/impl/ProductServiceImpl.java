@@ -48,5 +48,10 @@ public class ProductServiceImpl implements ProductService {
         return productRepository.save(p);
     }
 
+    @Override
+    public List<Product> filterByType(String catogeory) {
+        return productRepository.findByCategory(catogeory);
+    }
+
 
 }

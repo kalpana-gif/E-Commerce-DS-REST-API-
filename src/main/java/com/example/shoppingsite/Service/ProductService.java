@@ -21,4 +21,6 @@ public interface ProductService {
 
     Product UpdateProduct(Product p);
 
+    List<Product> filterByType(String catogeory);
+
 }
