@@ -1,3 +1,5 @@
+@import url('https://fonts.googleapis.com/css2?family=Lexend:wght@100;300;400;500;600;700&display=swap');
+
 body {
     background-color: rgba(240, 241, 243, 0.3);
 }
@@ -18,4 +20,32 @@ body {
     margin-bottom: 50px;
     box-shadow: 1px 5px 10px rgba(0, 0, 0, 0.2);
 }
+
+/*Product List table specifics*/
+.itemCard {
+    width: 50rem;
+}
+
+.productImg {
+    max-width: 150px;
+}
+
+/*.productImg:hover {*/
+/*    max-width: 200px;*/
+/*}*/
+
+.tableHeaders {
+    font-weight: normal;
+    font-size: 0.9em;
+    color: #a7a7a7;
+}
+
+.tableRow {
+    font-family: 'Lexend', sans-serif;
+    font-weight: 600;
+    border: none;
+    border-top: 1px solid #d5d5d5;
+    border-bottom: 1px solid #d5d5d5;
+}
+
 

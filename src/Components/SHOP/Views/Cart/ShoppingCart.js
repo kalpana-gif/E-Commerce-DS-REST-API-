@@ -1,29 +1,21 @@
 import React, {Component} from 'react';
-import {
-    MDBBtn,
-    MDBCard,
-    MDBCardBody,
-    MDBIcon,
-    MDBRow,
-    MDBTable,
-    MDBTableBody,
-    MDBTableHead,
-    MDBTooltip
-} from 'mdbreact';
 import 'sweetalert2/src/sweetalert2.scss';
-// import Swal from 'sweetalert2/dist/sweetalert2.js';js
+
+import './cart.css';
+import '../ShopAdmin/ShopAdmin.css';
 
 import axios from "axios";
 import swal from "sweetalert";
-import QTY from "./Qtychanger";
 import * as Swal from "sweetalert2";
 import AuthenticationService from "../../../Authentication/AuthenticationService";
+import {Card, Col, Container, Image, Row, Table} from "react-bootstrap";
+import Button from "react-bootstrap/Button";
+import {FontAwesomeIcon} from "@fortawesome/react-fontawesome";
+import {faTrash} from "@fortawesome/free-solid-svg-icons/faTrash";
+import {faMinus, faPlus} from "@fortawesome/free-solid-svg-icons";
 
 
-class ShoppingCart extends React.Component {
-
-
-
+class ShoppingCart extends Component {
 
     constructor(props) {
         super(props);
@@ -40,7 +32,7 @@ class ShoppingCart extends React.Component {
             data: [],
             value: 1,
             total: '',
-            id1:AuthenticationService.loggedUserId(),
+            id1: AuthenticationService.loggedUserId(),
 
             //coulomns declare here
             columns: [
@@ -94,19 +86,16 @@ class ShoppingCart extends React.Component {
     getCartItemsbyId() {
 
 
-        axios.get('http://localhost:8080/CartController/GetCartItems/'+this.state.id1).then(response => {
+        axios.get('http://localhost:8080/CartController/GetCartItems/' + this.state.id1).then(response => {
 
             this.setState({
                 Product: response.data,
-
             });
-
 
         }).catch(function (error) {
             console.log(error);
 
         })
-
 
 
     }
@@ -159,14 +148,10 @@ class ShoppingCart extends React.Component {
                     'Deleted!',
                     'Your file has been deleted.',
                     'success',
-                axios.delete('http://localhost:8080/CartController/deleteItem/' + id).then(response => {
-                    this.getCartItemsbyId();
+                    axios.delete('http://localhost:8080/CartController/deleteItem/' + id).then(response => {
+                        this.getCartItemsbyId();
 
-                })
-
-
-
-
+                    })
                 )
             } else if (
                 /* Read more about handling dismissals below */
@@ -179,10 +164,6 @@ class ShoppingCart extends React.Component {
                 )
             }
         })
-
-
-
-
 
 
     }
@@ -210,6 +191,12 @@ class ShoppingCart extends React.Component {
 
     }
 
+    handleChange = (e) => {
+        this.setState({
+            value: e.target.value
+        })
+    }
+
     //QTY changer
     decrease = () => {
         // console.log(this.state.value)
@@ -234,92 +221,80 @@ class ShoppingCart extends React.Component {
         const total = [];
         const {columns, Product} = this.state;
 
-        return Product.map((Product) =>
+        return (
 
-            <div key={Product.id}>
+                <Container className={"my-5 py-4"}>
+                    <Row>
+                        <Col>
+                            <Card className={"adminCard"}>
+                                <div className={" text-center cartTitle"}>Shopping Cart</div>
+                                <Card.Body className={"m-3"}>
+                                    <Table borderless>
+                                        <thead>
+                                        </thead>
 
-                <MDBRow center={true}>
+                                        {
+                                            Product.map( Product =>
+                                                <tbody key={Product.id}>
+                                                    <tr className={"cartRow"}>
+                                                        <td className={"text-center py-4 px-0"}>
+                                                            <Image className={"productImg"} variant="top" style={{width: '200px'}}
+                                                                   src={`data:image/jpeg;base64,${Product.picture}`}/>
+                                                        </td>
 
-                    <MDBCard style={{width: "75rem", marginTop: "2rem"}}>
-                        <MDBCardBody>
-                            <MDBTable className="product-table" striped hover responsive>
-                                <caption>List of All Product</caption>
-                                <MDBTableHead style={{
-                                    backgroundColor: "rgba(28,26,26,0.56)",
-                                    color: "white",
-                                    fontFamily: "sans-serif"
-                                }} columns={columns}/>
-                                <MDBTableBody>
-                                    <tr>
-                                        <td>{Product.id}</td>
-                                        <td><img src={`data:image/jpeg;base64,${Product.picture}`} alt=""
-                                                 className="img-fluid z-depth-10"/></td>
-                                        <td><h6 className="mt-3" key={new Date().getDate + 1}>
-                                            <strong>{Product.productname}</strong>
-                                        </h6>
-                                            <p key={new
-                                            Date().getDate} className="text-muted">{Product.description}</p>
-                                        </td>
-                                        <td>{Product.brand}</td>
-                                        <td>{Product.price}</td>
-                                        <td>
-                                            {/*<QTY/>*/}
-                                            <div className="def-number-input number-input">
-                                                <button onClick={this.decrease} id={Product.id} className="minus"></button>
-                                                <input className="quantity" id={Product.id} name="quantity" value={this.state.value}
-                                                       type="number"/>
-                                                <button onClick={this.increase} id={Product.id} className="plus"></button>
-                                            </div>
-                                        </td>
-                                        <td>
-                                            <MDBTooltip placement="top">
+                                                        <td style={{verticalAlign: 'middle'}} className={"py-2"}>
+                                                            <div className={"itemName"}>{Product.productname}</div>
+                                                            <div className={"itemID"}>{Product.id}</div>
+                                                            <div className={"itemPrice"}>LKR {Product.price}.00</div>
+                                                        </td>
 
-                                                <MDBBtn color="danger" size="sm"
-                                                        onClick={this.deleteItem.bind(this, Product.qty)}>
-                                                    <MDBIcon icon="trash"/>
-                                                </MDBBtn>
+                                                        <td style={{verticalAlign: 'middle'}}>
+                                                            {/*<QTY/>*/}
+                                                            <Button variant={"danger"} className={"itemBtn"} onClick={this.deleteItem.bind(this, Product.qty)}>
+                                                                <FontAwesomeIcon icon={faTrash}/>&nbsp; Remove
+                                                            </Button>
+                                                            <button onClick={this.increase}><FontAwesomeIcon icon={faPlus}/></button>
+                                                            <input className="quantity" name="quantity" value={this.state.value}
+                                                                   type="number"/>
+                                                            <button onClick={this.decrease} ><FontAwesomeIcon icon={faMinus}/></button>
+                                                            {/*TODO:issue on qty*/}
+                                                            {/*<input type="number" name="quantity" className="form-control text-center itemQty"*/}
+                                                            {/*       value={this.state.value} required={true} placeholder="enter qty" onChange={this.handleChange}/>*/}
+                                                        </td>
+                                                    </tr>
+                                                </tbody>
+                                            )
+                                        }
 
-                                                <div>Remove item</div>
-                                            </MDBTooltip>
-                                        </td>
-                                    </tr>
-                                </MDBTableBody>
-                            </MDBTable>
-                        </MDBCardBody>
-                    </MDBCard>
-                </MDBRow>
-                <MDBRow center>
-                    <MDBCard style={{width: "75rem"}}>
-                        <MDBCardBody style={{
-                            backgroundColor: "rgba(57,56,56,0.53)",
-                            width: "100%"
-                        }}>
-                            <MDBTable>
-                                <tbody>
-                                <tr>
-                                    <td>Total Amount:</td>
-                                    <td>{this.state.value * Product.price}</td>
-                                    <td>
+                                    </Table>
+                                </Card.Body>
+                            </Card>
+                        </Col>
 
-                                    </td>
-                                    <td><MDBBtn
-                                        onClick={this.PaynowBtnClicked.bind(this, Product.id, Product.qty, Product.price, this.state.value)}
-                                        color="warning"
-                                        style={{
-                                            width: "70%",
-                                            color: "white",
-                                            borderRadius: "10px"
-                                        }}><MDBIcon
-                                        far icon="credit-card"
-                                        style={{color: "white"}}/> Pay Now </MDBBtn>
-                                    </td>
-                                </tr>
-                                </tbody>
-                            </MDBTable>
-                        </MDBCardBody>
-                    </MDBCard>
-                </MDBRow>
-            </div>
+                        <Col md={4}>
+                            <Card className={"px-4 pb-4 pt-1 mx-2"}>
+                                <div className={"orderTitle"}>Order Summary</div>
+                                <Row className={"orderText"}>
+                                    <Col>Total</Col>
+                                    <Col className={"text-right orderPrice"}>LKR {this.state.value * Product.price}.00</Col>
+                                </Row>
+
+                                <div className={"text-center"} >
+                                    <Button className={"orderBtn"} variant={"primary"}
+                                            onClick={this.PaynowBtnClicked.bind(this, Product.id, Product.qty, Product.price, this.state.value)}>
+                                        CHECKOUT
+                                    </Button>
+                                </div>
+
+
+                            </Card>
+                        </Col>
+                    </Row>
+                </Container>
+
+
+
+
         );
 
 
