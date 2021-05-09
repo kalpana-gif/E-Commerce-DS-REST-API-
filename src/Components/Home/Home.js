@@ -1,7 +1,6 @@
 import React, {Component} from 'react';
 import './Home.css';
-import {Button, Carousel, Col, Container, Nav, Row} from 'react-bootstrap';
-import Item from "../SHOP/Views/Item/Item";
+import {Button, Carousel} from 'react-bootstrap';
 import Search from "../SHOP/SearchBar/Search";
 
 export default class Home extends Component {
@@ -41,19 +40,8 @@ export default class Home extends Component {
                 </Carousel>
 
 
-
                 <Search />
 
-                <Item/>
-
-                {/* --------------------------Shop Items-------------------------- */}
-                {/*<div className={"my-3"}>*/}
-                {/*    <Container>*/}
-
-                {/*        */}
-                {/*    </Container>*/}
-                {/*    /!*<Item/>*!/*/}
-                {/*</div>*/}
 
             </div>
         );

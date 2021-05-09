@@ -5,7 +5,7 @@ import axios from "axios";
 import {withRouter} from "react-router";
 import * as Swal from "sweetalert2";
 import AuthenticationService from "../../../Authentication/AuthenticationService";
-import {Button, Card, Col, Container, Row} from "react-bootstrap";
+import {Button, Card, Row} from "react-bootstrap";
 import {faHeart, faShoppingCart} from "@fortawesome/free-solid-svg-icons";
 import {FontAwesomeIcon} from "@fortawesome/react-fontawesome";
 
@@ -21,6 +21,7 @@ class EcommercePage extends React.Component {
             customerId: AuthenticationService.loggedUserId(),
             repeat: '',
             visible: 10,
+            search:''
         }
 
         this.buyBytnclicked = this.buyBytnclicked.bind(this);
@@ -72,7 +73,7 @@ class EcommercePage extends React.Component {
     }
 
     render() {
-        console.log(this.props.searchResults);
+        // console.log(this.props.searchResults);
 
         return (
             // Row include 5 items
@@ -108,9 +109,6 @@ class EcommercePage extends React.Component {
                         <Button className={"load-btn"} variant={"none"} onClick={this.loadMore}>Load More</Button>
                     }
                 </div>
-
-                {/*TODO: Search results needs to comes here*/}
-
 
             </div>
 

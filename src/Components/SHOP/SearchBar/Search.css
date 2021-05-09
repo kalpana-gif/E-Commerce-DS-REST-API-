@@ -26,6 +26,7 @@
     padding: 10px 20px;
     z-index: 3;
     cursor: pointer;
+    background-color: rgba(240, 241, 243, 0.3);
 }
 
 .searchInput:focus {
@@ -39,4 +40,29 @@
 
 .searchButton:focus {
     outline: none;
+}
+
+/* sub nav item */
+.sub-nav-item {
+    color: #5c5c5c;
+    font-family: 'Lexend', sans-serif;
+    font-weight: 500;
+    font-size: 1em;
+    padding: 5px 0;
+    margin: 20px 50px 20px 0;
+    border-radius: 0;
+    border-bottom: 2px solid rgba(240, 241, 243, 0.3);
+}
+
+/* sub nav item */
+.sub-nav-item:hover {
+    color: #000000;
+    border-bottom: 2px solid #000000;
+}
+
+/* sub nav item */
+.sub-nav-item:focus {
+    color: #000000;
+    border-bottom: 2px solid #000000;
+    box-shadow: none !important;
 }
