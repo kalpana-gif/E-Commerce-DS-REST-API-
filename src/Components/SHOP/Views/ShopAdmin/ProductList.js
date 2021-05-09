@@ -1,33 +1,27 @@
 import React, {Component} from 'react';
-import {
-    MDBBtn,
-    MDBCard,
-    MDBCardBody,
-    MDBIcon,
-    MDBRow,
-    MDBTable,
-    MDBTableBody,
-    MDBTableHead,
-    MDBTooltip
-} from 'mdbreact';
 import 'sweetalert2/src/sweetalert2.scss';
-// import Swal from 'sweetalert2/dist/sweetalert2.js';js
 
 import axios from "axios";
 import swal from "sweetalert";
 import * as Swal from "sweetalert2";
-import Navbar from "react-bootstrap/Navbar";
-import Nav from "react-bootstrap/Nav";
-import Form from "react-bootstrap/Form";
 import Button from "react-bootstrap/Button";
 
-import jsPDF from 'jspdf'; import 'jspdf-autotable';
-import moment from "moment";
+import 'jspdf-autotable';
+import './ShopAdmin.css';
+import {Badge, ButtonGroup, Card, Container, Image, InputGroup, Table} from "react-bootstrap";
+import {FontAwesomeIcon} from "@fortawesome/react-fontawesome";
+import {
+    faFilter,
+    faPen,
+    faSearch,
+    faStar,
+    faTimes,
+    faTrashAlt
+} from "@fortawesome/free-solid-svg-icons";
+import {faPlusSquare} from "@fortawesome/free-solid-svg-icons/faPlusSquare";
 
-// import Loader from 'react-loader-spinner';
 
-
-class productList extends React.Component {
+class productList extends Component {
 
 
     constructor() {
@@ -43,9 +37,12 @@ class productList extends React.Component {
             qty: '',
             price: '',
             searchclick: false,
+            filterType: 'All',
+            filterRate: 'All',
+            search: '',
 
 
-            //coulomns declare here
+            //columns declare here
             columns: [
                 {
                     label: 'ProductID',
@@ -87,6 +84,7 @@ class productList extends React.Component {
         this.updateBtnclicked = this.updateBtnclicked.bind(this);
         this.handleSubmit = this.handleSubmit.bind(this);
         this.handleSearch = this.handleSearch.bind(this);
+        this.addItem = this.addItem.bind(this);
 
     }
 
@@ -108,30 +106,41 @@ class productList extends React.Component {
     }
 
     handleSearch(event) {
+        event.preventDefault();
+
         this.setState({search: event.target.value});
     }
 
-    handleSubmit(event) {
-        event.preventDefault();
-        axios.get(`http://localhost:8080/productController/searchbyname/` + this.state.search)
+    handleSubmit() {
+        if (this.state.search !== '') {
+            axios.get(`http://localhost:8080/productController/searchbyname/` + this.state.search)
+                .then(response => {
+                    if (response.data.length > 0 ) {
+                        this.setState({
+                            Product: response.data
+                        });
+                    } else {
+                        Swal.fire('No items found')
+                    }
 
-
-            .then(response => {
-                console.log(this.state.Product)
-                this.setState({
-                    searchclick: true,
-                    Product: response.data
-                });
-
-
-            }).catch(function (error) {
-            console.log(error);
-        })
+                }).catch(function (error) {
+                    console.log(error);
+            })
+        } else {
+            swal({
+                title: "Enter an item to search",
+                icon: "warning",
+                buttons: "Ok"
+            })
+        }
 
     }
 
-    deleteItem(id) {
+    addItem() {
+        this.props.history.push('/AddItems')
+    }
 
+    deleteItem(id) {
 
 
         Swal.fire({
@@ -146,21 +155,17 @@ class productList extends React.Component {
 
         }).then((result) => {
             if (result.isConfirmed) {
-                Swal.fire(
-                    'Deleted!',
-                    'Your file has been deleted.',
-                    'success',
-                    axios.delete('http://localhost:8080/productController/deleteItem/' + id).then(response => {
-                        this.getAllProducts();
-
-                    })
-                )
+                axios.delete('http://localhost:8080/productController/deleteItem/' + id).then(response => {
+                    Swal.fire(
+                        'Deleted!',
+                        'Your file has been deleted.',
+                        'success',
+                    );
+                    this.getAllProducts();
+                })
             } else {
                 Swal.fire('Delete Canceled')
-
             }
-
-
         })
 
     }
@@ -171,129 +176,244 @@ class productList extends React.Component {
 
     }
 
-    exportPDF = () => {
-        console.log( "SSSSSSSSSS" )
+    // Data Filtering
 
+    handleFilterDataChange = (e) => {
+        e.preventDefault();
 
-        const unit = "pt";
-        const size = "A3"; // Use A1, A2, A3 or A4
-        const orientation = "portrait"; // portrait or landscape
-        const marginLeft = 40;
-        const doc = new jsPDF( orientation, unit, size );
+        this.setState({
+            filterType: e.target.value,
+            filterRate: e.target.value
+        })
 
-        // const jsPDF = require('jspdf');
-        // require('jspdf-autotable');
+        console.log(e.target.value);
 
-        const title = "IFKF SHOP-Product Report("+moment().format("DD-MM-YYYY hh:mm:ss")+")";
-        const headers = [["Product_Id","Product","Brand","QTY"]];
-
-        const Product = this.state.Product.map( currentProduct => [ currentProduct.id,currentProduct.productname,currentProduct.brand, currentProduct.qty,] );
-
-        let content = {
-            startY: 50,
-            head: headers,
-            body: Product
-        };
-        doc.setFontSize( 20 );
-        doc.text( title, marginLeft, 40 );
-        require('jspdf-autotable');
-        doc.autoTable( content );
-        doc.save( "IFKF_Shop_Product "+moment().format("DD-MM-YYYY hh:mm:ss")+".pdf" )
     }
 
+    filterByType = () => {
+
+        if (this.state.filterType !== '') {
+            if (this.state.filterType === 'All') {
+                this.getAllProducts();
+            } else {
+                axios.get('http://localhost:8080/productController/filter/' + this.state.filterType)
+                    .then(res => {
+                        if (res.data.length > 0) {
+                            this.setState({
+                                Product: res.data
+                            })
+                        } else {
+                            Swal.fire('No items found')
+                        }
+                    })
+            }
+        }
+    }
+
+    // filterByRate = () => {
+    //
+    //     if (this.state.filterType !== '') {
+    //         if (this.state.filterType === 'All') {
+    //             this.getAllProducts();
+    //         } else {
+    //             axios.get('http://localhost:8080/productController/filter/' + this.state.filterType)
+    //                 .then(res => {
+    //                     if (res.data.length > 0) {
+    //                         this.setState({
+    //                             Product: res.data
+    //                         })
+    //                     } else {
+    //                         Swal.fire('No items found')
+    //                     }
+    //                 })
+    //         }
+    //     }
+    // }
+
+    clearFilterData = () => {
+        this.setState({
+            filterType: 'All',
+            filterRate: 'All'
+        });
+        this.getAllProducts();
+    }
+
+    clearSearch = () => {
+        if (this.state.search !== '') {
+            this.setState({search: ''});
+            this.getAllProducts();
+        }
+
+    }
 
     render() {
 
-        const rows = [];
-        const {columns, Product} = this.state;
-
-        {
-
-            Product.map(row => {
-                console.log(row);
-
-
-                return rows.push(
-                    {
-                        'id': row.id,
-
-                        'img': <img src={`data:image/jpeg;base64,${row.picture}`} alt=""
-                                    className="img-fluid z-depth-10"/>,
-                        'product': [<h6 className="mt-3" key={new Date().getDate + 1}><strong>{row.productname}</strong>
-                        </h6>,
-                            <p key={new
-                            Date().getDate} className="text-muted">{row.description}</p>],
-                        'brand': row.brand,
-                        'price': `Rs.${row.price}`,
-                        'qty': row.qty,
-                        'button':
-                            <MDBTooltip placement="top">
-
-                                <MDBBtn color="danger" size="sm" onClick={this.deleteItem.bind(this, row.id)}>
-                                    <MDBIcon icon="trash"/>
-                                </MDBBtn>
-
-                                <div>Remove item</div>
-                            </MDBTooltip>,
-                        'buttonEdit':
-                            <MDBTooltip placement="top">
-
-                                <MDBBtn color="info" size="sm" onClick={this.updateBtnclicked.bind(this, row.id)}>
-                                    <MDBIcon far icon="edit"/>
-                                </MDBBtn>
-
-                                <div>Edit</div>
-                            </MDBTooltip>
-
-
-                    }
-                )
-            });
-        }
-
+        const {Product} = this.state;
 
         return (
-            <div>
+
+            <Container className={"my-5 py-4"}>
+                <Card className={"adminCard"}>
+                    <div className={"text-center adminCardTitle"}>Item List</div>
+                    <Card.Body className={"m-3"}>
+
+                        <div className={"p-5 mb-5"} style={{border: '2px solid rgba(0,0,0,0.1)', borderRadius: '10px'}}>
+                            <div className={"row"}>
+                                <div className={"row"}>
+                                    <div className={"col text-center"} style={{backgroundColor: '#fff'}}>
+                                        <Button variant={"dark"} type={"submit"} onClick={this.addItem}>
+                                            <FontAwesomeIcon icon={faPlusSquare}/>&nbsp; Add
+                                        </Button>
+
+                                    </div>
+                                </div>
+                                <div className={"col"}>
+                                    <InputGroup>
+                                        <select className={"form-control"} value={this.state.filterType}
+                                                onChange={this.handleFilterDataChange}>
+                                            <option value={"All"}>Category</option>
+                                            <option value={"Men"}>Men Collection</option>
+                                            <option value={"Women"}>Women Collection</option>
+                                            <option value={"Shoes"}>Shoe Collection</option>
+                                        </select>
+                                        <InputGroup.Append>
+                                            <ButtonGroup>
+                                                <Button variant="info" style={{width: '40px', borderRadius: '0'}}>
+                                                    <FontAwesomeIcon icon={faFilter} onClick={this.filterByType}/>
+                                                </Button>
+                                                <Button variant="danger" style={{width: '40px'}}>
+                                                    <FontAwesomeIcon icon={faTimes} onClick={this.clearFilterData}/>
+                                                </Button>
+                                            </ButtonGroup>
+                                        </InputGroup.Append>
+                                    </InputGroup>
+                                </div>
+
+                                <div className={"col pl-0"}>
+                                    <InputGroup>
+                                        <select className={"form-control"} value={this.state.filterRate}
+                                                onChange={this.handleFilterDataChange}>
+                                            <option value={"All"}>Rating</option>
+                                            <option value={"5"}>5 stars</option>
+                                            <option value={"4"}>4 stars</option>
+                                            <option value={"3"}>3 stars</option>
+                                            <option value={"2"}>2 stars</option>
+                                            <option value={"1"}>1 stars</option>
+                                        </select>
+                                        <InputGroup.Append>
+                                            <ButtonGroup>
+                                                <Button variant="info" style={{width: '40px', borderRadius: '0'}}>
+                                                    <FontAwesomeIcon icon={faFilter}/>
+                                                </Button>
+                                                <Button variant="danger" style={{width: '40px'}}>
+                                                    <FontAwesomeIcon icon={faTimes}/>
+                                                </Button>
+                                            </ButtonGroup>
+                                        </InputGroup.Append>
+                                    </InputGroup>
+                                </div>
+
+                                <div className={"col-4 px-0"}>
+                                    <div className={"input-group"}>
+                                        <input className={"form-control"} type={"text"} value={this.state.search}
+                                               placeholder={"Search items"} onChange={this.handleSearch} onClick={this.clearSearch}/>
+                                        <Button variant={"dark"} type={"submit"}
+                                                style={{float: 'right', borderRadius: '0 5px 5px 0'}}>
+                                            <FontAwesomeIcon icon={faSearch} onClick={this.handleSubmit}/>
+                                        </Button>
+                                    </div>
+                                </div>
+
+                            </div>
+                        </div>
 
 
-                <MDBRow center={true}  style={{background:"#45454559"}}>
-                    <MDBCard style={{width: "81rem", marginTop: "2rem",background:""}}>
-                        <Navbar bg="dark" variant="dark">
-                            <Nav className="mr-auto">
-                            </Nav>
-                            <Form inline onSubmit={this.handleSubmit}>
-                                <input type="text" placeholder="Search" className="mr-sm-2" onChange={this.handleSearch}
-                                       required={true}/>
-                                <Button type="submit" variant="outline-info" size="sm">Search</Button>
-                            </Form>
-                        </Navbar>
-                        <MDBBtn color={"warning"} style={{color: 'white'}} href='/AddItems'><i
-                            className="fas fa-plus"></i> Add Product</MDBBtn>
+                        <div className={"mb-5 table-responsive tableFixHead"}>
 
-                        <MDBBtn color={"success"} style={{color: 'white'}} onClick={() => this.exportPDF()}><MDBIcon far icon="file-pdf" /> Genrate A Report {moment().format("DD-MM-YYYY ")}</MDBBtn>
+                            <Table borderless hover>
+                                <thead>
+                                <tr className={"tableHeaders"}>
+                                    <th> </th>
+                                    <th>NAME</th>
+                                    <th>ID</th>
+                                    <th>PRICE</th>
+                                    <th className={"text-center"}>TYPE</th>
+                                    <th className={"text-center"}>QTY</th>
+                                    <th className={"text-center"}>RATING</th>
+                                    <th className={"text-center"}>ACTION</th>
+                                </tr>
+                                </thead>
+                                <tbody>
+
+                                {
+                                    Product.length === 0 ?
+                                        <tr align="center">
+                                            <td colSpan="10">No records at the moment</td>
+                                        </tr>
+
+                                        : [
+                                            Product.map(row => {
+                                                return (
+                                                    <tr className={"tableRow"} key={row.id}>
+                                                        <td className={"text-center py-2 pl-0 pr-3"}
+                                                            style={{width: '200px'}}>
+                                                            <Image className={"productImg"} variant="top"
+                                                                   src={`data:image/jpeg;base64,${row.picture}`}/>
+                                                        </td>
+                                                        <td style={{verticalAlign: 'middle'}}>{row.productname}</td>
+                                                        <td style={{verticalAlign: 'middle'}}>{row.id}</td>
+                                                        <td style={{verticalAlign: 'middle'}}>LKR {row.price}.00</td>
+                                                        <td style={{verticalAlign: 'middle', textAlign: 'center'}}>
+                                                            {
+                                                                row.catogeory === 'Men' ?
+                                                                    <Badge variant="primary">MEN</Badge> :
+                                                                    row.catogeory === 'Women' ?
+                                                                        <Badge variant="success">WOMEN</Badge> :
+                                                                        row.catogeory === 'Shoes' ?
+                                                                            <Badge variant="info">SHOES</Badge> : ''
+                                                            }
+
+                                                        </td>
+                                                        <td style={{
+                                                            verticalAlign: 'middle',
+                                                            textAlign: 'center'
+                                                        }}>{row.qty}</td>
+                                                        <td style={{verticalAlign: 'middle', textAlign: 'center'}}>
+                                                            <FontAwesomeIcon icon={faStar}/><FontAwesomeIcon icon={faStar}/><FontAwesomeIcon
+                                                            icon={faStar}/>
+                                                            <FontAwesomeIcon icon={faStar}/><FontAwesomeIcon icon={faStar}/>
+                                                        </td>
+                                                        <td style={{
+                                                            verticalAlign: 'middle',
+                                                            textAlign: 'center',
+                                                            width: '50px'
+                                                        }}>
+                                                            <ButtonGroup>
+                                                                <Button variant={"warning"} type={"submit"}
+                                                                        onClick={this.updateBtnclicked.bind(this, row.id)}>
+                                                                    <FontAwesomeIcon icon={faPen}/>
+                                                                </Button>
+                                                                <Button variant={"danger"} type={"submit"}
+                                                                        onClick={this.deleteItem.bind(this, row.id)}>
+                                                                    <FontAwesomeIcon icon={faTrashAlt}/>
+                                                                </Button>
+                                                            </ButtonGroup>
+                                                        </td>
+                                                    </tr>
+                                                )
+                                            })
+
+                                        ]
+                                }
 
 
+                                </tbody>
+                            </Table>
+                        </div>
 
-                        <MDBCardBody>
-
-
-                            <MDBTable className="product-table" striped hover responsive>
-                                <caption>List of All Product</caption>
-                                <MDBTableHead style={{
-                                    backgroundColor: "rgba(28,26,26,0.56)",
-                                    color: "white",
-                                    fontFamily: "sans-serif",
-                                    textAlign: 'center'
-                                }} columns={columns}/>
-                                <MDBTableBody rows={rows}/>
-                            </MDBTable>
-                        </MDBCardBody>
-                    </MDBCard>
-                </MDBRow>
-
-
-            </div>
-
+                    </Card.Body>
+                </Card>
+            </Container>
 
         );
     }
