@@ -85,5 +85,10 @@ public class ProductController {
 
     }
 
+    @GetMapping("/filter/{itemType}")
+    public List<Product> filterItemsByType(@PathVariable String itemType) {
+        return productService.filterByType(itemType);
+    }
+
 
 }
