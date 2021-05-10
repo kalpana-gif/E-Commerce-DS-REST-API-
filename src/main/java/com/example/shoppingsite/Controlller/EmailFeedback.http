@@ -6,3 +6,13 @@ Content-Type: application/json
   "email": "minindu.uk@gmail.com",
   "feedback": "Your order is completed"
 }
+
+######
+
+POST http://localhost:8080/Feedback/SMS
+Content-Type: application/json
+
+{
+  "toNumber": "+94711094444",
+  "message": "Hi this is my first message"
+}

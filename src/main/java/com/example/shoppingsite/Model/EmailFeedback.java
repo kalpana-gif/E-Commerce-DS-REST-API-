@@ -6,10 +6,8 @@ public class EmailFeedback {
 
     @NotNull
     private String name;
-
     @NotNull
     private String email;
-
     private String feedback;
 
     public String getName() {
