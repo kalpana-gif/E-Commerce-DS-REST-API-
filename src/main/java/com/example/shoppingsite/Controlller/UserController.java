@@ -14,7 +14,7 @@ import java.util.Optional;
 @CrossOrigin(origins = "http://localhost:3000")
 @RestController
 @RequestMapping("/ShoppingSite") //  <-
-//NOTE!!! URLS HAVE BEEN CHANGED ,REMEMBER TO CHANGE TO MAKE THE FRONTEND WORK....
+//TODO:NOTE!!! URLS HAVE BEEN CHANGED ,REMEMBER TO CHANGE TO MAKE THE FRONTEND WORK....
 
 public class UserController {
 
