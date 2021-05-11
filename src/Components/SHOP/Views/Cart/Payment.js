@@ -1,300 +1,382 @@
 import React, {Component} from "react";
-import {
-    MDBContainer,
-    MDBRow,
-    MDBCol,
-    MDBBtn,
-    MDBCard,
-    MDBCardBody,
-    MDBCardHeader,
-    MDBCardImage,
-    MDBIcon
-} from 'mdbreact';
 import axios from "axios";
+import {Button, Card, Col, Container, Modal, Row, Tab, Tabs} from "react-bootstrap";
+
+import './cart.css';
+import '../ShopAdmin/ShopAdmin.css';
 import swal from "sweetalert";
-import Swal from "sweetalert2";
-import moment from "moment";
+import AuthenticationService from "../../../Authentication/AuthenticationService";
+import AuthenticationDataService from "../../../Authentication/AuthenticationDataService";
 
 
-class Payment extends React.Component {
+class Payment extends Component {
 
     constructor(props) {
         super(props);
         this.state = {
-            productname: '',
-            id: this.props.match.params.id,
-            brand: '',
-            email: '',
-            description: '',
-            // products:''
-            tot: this.props.match.params.tot,
-            value: this.props.match.params.value,
-            image: '',
-            imageURL: ' ',
-            imageName: ' ',
-            Address: ' ',
-            imageURLValidation: false,
-            date_create: ''
+            tot: this.props.match.params.total,
+            name:'',
+            email:'',
+            mobileNo:'',
+            cardnum: '',
+            cvv:'',
+            expMonth:'',
+            expYear:'',
+            secretNo:'',
+            cardBalance:'',
+            year: new Date().getFullYear(),
+            month: new Date().getMonth() + 1,
+            show: false
 
         }
-
-
-        // this.refreshProducts=this.refreshProducts.bind(this);
-        this.handleSubmit = this.handleSubmit.bind(this);
-        this.handleChangeProductName = this.handleChangeProductName.bind(this);
-        this.handleChangeID = this.handleChangeID.bind(this);
-        this.handleChangeemail = this.handleChangeemail.bind(this);
-        this.handleChangeBrandName = this.handleChangeBrandName.bind(this);
-        this.handleChangeDescription = this.handleChangeDescription.bind(this);
-        this.handleChangeQty = this.handleChangeQty.bind(this);
-        this.handleChangePrice = this.handleChangePrice.bind(this);
-        this.onchangeFile = this.onchangeFile.bind(this);
-        this.removePhoto = this.removePhoto.bind(this);
-        this.refreshProduct = this.refreshProduct.bind(this);
-        this.handleChangeAddress = this.handleChangeAddress.bind(this);
-        this.getDateandTime = this.getDateandTime.bind(this);
 
     }
 
     componentDidMount() {
-        this.refreshProduct();
-    }
+        const loggedUser = AuthenticationService.loggedUserId();
 
-    refreshProduct() {
-        if (this.state.id == -1) {
-            return
-        }
-        axios.get('http://localhost:8080/productController/getDetails/' + this.state.id).then(response => {
-            console.log(this.state.id)
+        AuthenticationDataService.getUser(loggedUser).then(res => {
             this.setState({
-
-                id: this.state.id,
-                productname: response.data.productname,
-                brand: response.data.brand,
-                picture: response.data.picture,
-                catogeory: response.data.catogeory,
-                price: this.state.tot,
-                qty: this.state.qty,
-                description: response.data.description,
-
-
-            });
-
-        }).catch(function (error) {
-            console.log(error);
+                name:res.data.name,
+                email:res.data.email,
+                mobileNo:res.data.mobileNo
+            })
         })
 
     }
 
-    handleChangeProductName(event) {
-        this.setState({productname: event.target.value});
+    //CVV validation
+    checkCVV = (cno,cvv) => {
+        let valid = false;
+        axios.get('http://localhost:8080/CreditCardController/getSecretNumber/' +cno)
+            .then(res => {
+                if (res.data) {
+                    // console.log(res.data)
+                    this.setState({
+                        secretNo: res.data.secretNo,
+                        cardBalance: res.data.cardBalance
+                    })
+
+                    if (this.state.secretNo === cvv) {
+                        valid = true
+                    } else {
+                        valid = false
+                        swal({
+                            title: "Error!",
+                            text: "Incorrect CVV",
+                            icon: "error",
+                            buttons: "Ok"
+                        }).then(() =>{
+                            this.setState({
+                                cvv:'',
+                                cardnum:'',
+                                expMonth:'',
+                                expYear:''
+                            })
+                        })
+                    }
+
+                } else {
+                    swal({
+                        title: "Error!",
+                        text: "Incorrect information",
+                        icon: "error",
+                        buttons: "Ok"
+                    }).then(() =>{
+                        this.setState({
+                            cvv:'',
+                            cardnum:'',
+                            expMonth:'',
+                            expYear:''
+                        })
+                    })
+                    valid = false;
+                }
+            })
+        return valid;
     }
 
-    handleChangeID(event) {
-        this.setState({id: event.target.value});
-    }
+    //Inputs & Expire date Validation
+    checkValidity = () => {
+        let cnum = this.state.cardnum;
+        let cvc = this.state.cvv
+        let eMonth = this.state.expMonth;
+        let eYear = this.state.expYear;
+        let valid = false;
 
-    handleChangeemail(event) {
-        this.setState({email: event.target.value});
-    }
+        if (eMonth !== '' && eYear !== '' && cnum !== '' && cvc !== '') {
 
-    handleChangeBrandName(event) {
-        this.setState({brand: event.target.value});
-    }
+            if (cnum.length === 16) {
+                if (cvc.length === 3) {
+                    // check cvv
+                    if (this.checkCVV(cnum,cvc)) {
 
-    handleChangeDescription(event) {
-        this.setState({description: event.target.value});
-    }
+                        // check expiration
+                        if (eYear >= this.state.year) {
+                            if (eMonth>= this.state.month) {
+                                //not expired
+                                valid = true;
+                            } else {
+                                swal({
+                                    title: "Expired Card!",
+                                    icon: "warning",
+                                    buttons: "Ok"
+                                }).then(() =>{
+                                    valid = false;
+                                    this.setState({
+                                        cvv:'',
+                                        cardnum:'',
+                                        expMonth:'',
+                                        expYear:''
+                                    })
+                                })
+                            }
+                        } else {
+                            swal({
+                                title: "Expired Card!",
+                                icon: "warning",
+                                buttons: "Ok"
+                            }).then(() =>{
+                                valid = false;
+                                this.setState({
+                                    cvv:'',
+                                    cardnum:'',
+                                    expMonth:'',
+                                    expYear:''
+                                })
+                            })
+                        }
 
-    handleChangeQty(event) {
-        this.setState({value: event.target.value});
-    }
-
-    handleChangePrice(event) {
-        this.setState({price: event.target.value});
-    }
-
-    handleChangeAddress(event) {
-        this.setState({Address: event.target.value});
-    }
-
-
-    async handleSubmit(event) {
-
-
-        event.preventDefault();
-        let formData = new FormData();
-        formData.append('productname', this.state.productname);
-        formData.append('id', this.state.id);
-        formData.append('brand', this.state.brand);
-        formData.append('email', this.state.email);
-        formData.append('description', this.state.description);
-        // formData.append('file', this.state.image);
-        formData.append('total', this.state.tot);
-        formData.append('Address', this.state.Address);
-        formData.append('Qty', this.state.value);
-        formData.append('purchase_date', this.state.date_create);
-
-
-        console.log('ssssssssssss')
-        console.log(this.state.date_create)
-
-
-        Swal.fire({
-            title: 'Order Confimation',
-            text: "You won't be able to revert this!",
-            icon: 'success',
-            showCancelButton: true,
-            confirmButtonColor: '#f6b102',
-            cancelButtonColor: '#d33',
-            confirmButtonText: ' Confirm Now'
-
-
-        }).then((result) => {
-            if (result.isConfirmed) {
-                Swal.fire(
-                    'Purchased!',
-                    'Your item ',
-                    'success',
-                    axios.delete('http://localhost:8080/CartController/deleteItemAuto/' +this.state.id).then(
-                        this.props.history.push("/shop")
-                    ),
-                    axios.post(`http://localhost:8080/OrderController/Order`, formData),
-                    console.log("ID:"+this.state.id),
-
-
-                )
+                    }
+                } else {
+                    swal({
+                        title: "Invalid CVC number!",
+                        icon: "warning",
+                        buttons: "Ok"
+                    })
+                    valid = false;
+                }
+            } else {
+                swal({
+                    title: "Invalid card number!",
+                    icon: "warning",
+                    buttons: "Ok"
+                })
+                valid = false;
             }
-        })
 
+        } else {
+            swal({
+                title: "All details required!",
+                icon: "warning",
+                buttons: "Ok"
+            })
+            valid = false;
+        }
 
+        return valid;
     }
 
-    onchangeFile(e) {
+    //check balance and pay
+    handleCreditPay = (e) => {
+        e.preventDefault();
 
-
-        if (e.target.files.length) {
-            this.setState({
-                image: e.target.files[0],
-                imageUrl: URL.createObjectURL(e.target.files[0]),
-                imageName: e.target.files[0].name,
-                imageURLValidation: true,
-            });
+        if (this.checkValidity) {
+            if (this.state.cardBalance > this.state.tot ) {
+                //payment successful; display modal box
+                this.handleShow()
+            } else {
+                swal({
+                    title: "Insufficient Balance!",
+                    icon: "warning",
+                    buttons: "Ok"
+                }).then(() =>{
+                    this.setState({
+                        cvv:'',
+                        cardnum:'',
+                        expMonth:'',
+                        expYear:''
+                    })
+                })
+            }
         }
 
 
     }
 
-    removePhoto() {
+    handleMobilePay = (e) => {
+        e.preventDefault();
+    }
+
+    handleDataChange = (e) => {
+        e.preventDefault();
+
         this.setState({
-            image: ' ',
-            imageUrl: ' ',
-            imageURLValidation: false,
-            imageName: ' '
+            [e.target.name]: e.target.value
         })
 
     }
 
-    getDateandTime() {
-        this.setState({date_create: moment().format("DD-MM-YYYY hh:mm:ss")})
+
+
+
+    handleShow = () => {this.setState({show:true})}
+
+    handleClose = () => {this.setState({show:false})}
+
+    deliveryService = (response) => {
+        if (response) {
+            this.props.history.push('/delivery');
+        } else {
+            this.props.history.push('/');
+        }
     }
 
     render() {
         return (
-            <div>
-                <MDBContainer>
-                    <MDBRow className={"justify-content-center"}>
-                        <MDBCol size={8}>
-                            <MDBCard style={{marginTop: "1rem"}}>
-                                <MDBCardHeader className="text-center"
-                                               style={{backgroundColor: "gray", color: "white"}}>Payment</MDBCardHeader>
-                                <MDBCardBody>
-                                    <form onSubmit={this.handleSubmit}>
-                                        <MDBRow center={true}>
-                                            <MDBCol size="4">
 
-                                                <img src={`data:image/jpeg;base64,${this.state.picture}`} alt=""
-                                                     className="img-fluid z-depth-10"/>
+            <Container className={"my-5 py-4"} style={{width:'36.9rem'}}>
 
-                                            </MDBCol>
-                                        </MDBRow>
-                                        {/*///////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////*/}
-                                        <MDBRow center={true}>
+                {/*-----------------------------------Credit Card-----------------------------------*/}
+                <Tabs defaultActiveKey="credit" id="uncontrolled-tab-example">
+                    <Tab eventKey="credit" title="Credit Card">
 
-                                            <MDBCol md="10">
+                        <Card style={{width:'35rem'}} className={"payCard"}>
+                            <Card.Header style={{backgroundColor: 'transparent'}}><div className={"payTitle"}>Payment</div></Card.Header>
+                            <Card.Body>
+                                <div className={"mb-3"}>
+                                    <label htmlFor="cardholder" className="grey-text">
+                                        Card Holder Name
+                                    </label>
+                                    <input type="text" id="cardholder" name="cardholder" className="form-control" value={this.state.name} disabled/>
+                                </div>
 
-                                                {/*<p className="h4 text-center mb-4"></p>*/}
-                                                <label htmlFor="productname" className="grey-text ">
-                                                    Product name
-                                                </label>
-                                                <input type="text" id="productname" name="productname"
-                                                       className="form-control" value={this.state.productname}
-                                                       onChange={this.handleChangeProductName} disabled/>
-                                                <br/>
-                                                <label htmlFor="productId" className="grey-text">
-                                                    Product ID
-                                                </label>
-                                                <input type="text" id="productId" name="id" className="form-control"
-                                                       value={this.state.id}
-                                                       onChange={this.handleChangeID} required={true} disabled/>
-                                                <br/>
-                                                <label htmlFor="qty" className="grey-text">
-                                                    Qty
-                                                </label>
-                                                <input type="text" id="qty" name="qty" className="form-control"
-                                                       value={this.state.value}
-                                                       onChange={this.handleChangeQty} required={true} disabled/>
-                                                <br/>
-                                                <label htmlFor="productPrice" className="grey-text">
-                                                    Total
-                                                </label>
-                                                <input type="" id="productPrice" name="price" className="form-control"
-                                                       value={this.state.tot}
-                                                       onChange={this.handleChangePrice} disabled/>
-                                                <br/>
-                                                <label htmlFor="brand" className="grey-text">
-                                                    Brand
-                                                </label>
-                                                <input type="" id="brand" name="brand" className="form-control"
-                                                       value={this.state.brand}
-                                                       onChange={this.handleChangeBrandName} disabled/>
-                                                <br/>
+                                <div className={"mb-3"}>
+                                    <label htmlFor="cardnum" className="grey-text">
+                                        Card Number
+                                    </label>
+                                    <input type="text" id="cardnum" name="cardnum" className="form-control" required={true}
+                                           pattern="[0-9]{16}" maxLength="16" value={this.state.cardnum}
+                                           onChange={this.handleDataChange} />
+                                </div>
 
-                                                <label htmlFor="description" className="grey-text">
-                                                    Description
-                                                </label>
-                                                <textarea type="text" id="description" name="description"
-                                                          className="form-control" rows="3"
-                                                          value={this.state.description}
-                                                          onChange={this.handleChangeDescription} disabled/>
-                                                <label htmlFor="email" className="grey-text">
-                                                    E-mail
-                                                </label>
-                                                <input type="email" id="email" name="email" className="form-control"
-                                                       value={this.state.email}
-                                                       onChange={this.handleChangeemail} required/>
+                                <Row className={"mb-3"}>
+                                    <Col md={5}>
+                                        <label htmlFor="exp" className="grey-text">
+                                            Valid Thru
+                                        </label>
+                                        <Row>
+                                            <Col className={"pr-0"}>
+                                                <input type="text" id="expMonth" name="expMonth" className="form-control"
+                                                       style={{width:'100%'}} placeholder={"MM"} maxLength="2" required={true}
+                                                       onChange={this.handleDataChange}/>
+                                            </Col>
+                                            <Col>
+                                                <input type="text" id="expYear" name="expYear" className="form-control"
+                                                       style={{width:'100%'}} placeholder={"YYYY"} maxLength="4" required={true}
+                                                       onChange={this.handleDataChange}/>
+                                            </Col>
+                                        </Row>
 
-                                                <br/>
-                                                <label htmlFor="catogeory" className="grey-text">
-                                                    Address
-                                                </label>
-                                                <textarea type="text" id="Address" name="Address"
-                                                          className="form-control" rows="3" value={this.state.Address}
-                                                          onChange={this.handleChangeAddress} required/>
 
-                                                <div className="text-center mt-4">
-                                                    <MDBBtn color="warning" type="submit"
-                                                            onClick={this.getDateandTime}>Pay</MDBBtn>
-                                                </div>
-                                            </MDBCol>
-                                        </MDBRow>
-                                    </form>
-                                </MDBCardBody>
-                            </MDBCard>
-                        </MDBCol>
-                    </MDBRow>
-                </MDBContainer>
-            </div>
+                                    </Col>
+
+                                    <Col md={7}>
+                                        <label htmlFor="cvv" className="grey-text">
+                                            CVC/CVV
+                                        </label>
+                                        <input type="password" id="cvv" name="cvv" className="form-control"
+                                               required={true} maxLength="3" pattern="[0-9]{3}" value={this.state.cvv}
+                                               onChange={this.handleDataChange}/>
+                                    </Col>
+                                </Row>
+
+                                <div className={"mb-3"}>
+                                    <label htmlFor="email" className="grey-text">
+                                        Email Address
+                                    </label>
+                                    <input type="email" id="cmail" name="mail" className="form-control" value={this.state.email} disabled />
+                                </div>
+
+                                <div className={"mb-3 mt-4"}>
+                                    <Button variant={"primary"} type={"submit"} onClick={this.handleCreditPay}  block>Pay Now</Button>
+                                </div>
+
+                            </Card.Body>
+                        </Card>
+                    </Tab>
+
+
+
+                    {/*-----------------------------------Mobile Payment-----------------------------------*/}
+                    <Tab eventKey="mobile" title="Mobile">
+
+                        <form onSubmit={this.handleMobilePay}>
+                        <Card style={{width:'35rem'}} className={"payCard"}>
+                            <Card.Header style={{backgroundColor: 'transparent'}}>
+                                <div className={"payTitle"}>Payment</div>
+                            </Card.Header>
+                            <Card.Body>
+                                <div className={"mb-3"}>
+                                    <label htmlFor="pname" className="grey-text">
+                                        Name
+                                    </label>
+                                    <input type="text" id="pname" name="pname" className="form-control" value={this.state.name} disabled/>
+                                </div>
+
+                                <Row className={"mb-3"}>
+                                    <Col md={7}>
+                                        <label htmlFor="pnumber" className="grey-text">
+                                            Mobile Number
+                                        </label>
+                                        <input type="text" id="pnumber" name="pnumber" className="form-control" value={this.state.mobileNo} disabled/>
+                                    </Col>
+
+                                    <Col md={5}>
+                                        <label htmlFor="pin" className="grey-text">
+                                            PIN
+                                        </label>
+                                        <input type="password" id="pin" name="pin" className="form-control"
+                                               required={true} maxLength="4" pattern="[0-9]"
+                                               onChange={this.handleChangeID}/>
+                                    </Col>
+                                </Row>
+
+                                <div className={"mb-3"}>
+                                    <label htmlFor="email" className="grey-text">
+                                        Email Address
+                                    </label>
+                                    <input type="email" id="mmail" name="email" className="form-control" value={this.state.email} disabled />
+                                </div>
+
+                                <div className={"mb-3 mt-4"}>
+                                    <Button variant={"primary"} onClick={this.handleShow} block>Pay Now</Button>
+                                </div>
+                            </Card.Body>
+                        </Card>
+                        </form>
+                    </Tab>
+                </Tabs>
+
+
+                {/*-------------------------Modal Box-------------------------*/}
+                <Modal show={this.state.show} onHide={this.handleClose}>
+                    <Modal.Header closeButton>
+                        <Modal.Title>Delivery</Modal.Title>
+                    </Modal.Header>
+                    <Modal.Body>Do you need additional delivery service ?</Modal.Body>
+                    <Modal.Footer>
+                        <Button variant="secondary" onClick={this.handleClose}>
+                            No
+                        </Button>
+                        <Button variant="primary" onClick={() => this.deliveryService(true)}>
+                            Yes
+                        </Button>
+                    </Modal.Footer>
+                </Modal>
+
+            </Container>
+
         );
     }
 
