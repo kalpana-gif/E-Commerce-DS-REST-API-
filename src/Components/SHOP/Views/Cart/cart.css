@@ -78,3 +78,15 @@
     padding: 10px;
     width: 100%;
 }
+
+.payCard {
+    border-radius: 0;
+
+}
+
+.payTitle {
+    font-family: 'Lexend', sans-serif;
+    font-weight: 600;
+    font-size: 1.7em;
+    padding: 10px 0;
+}
