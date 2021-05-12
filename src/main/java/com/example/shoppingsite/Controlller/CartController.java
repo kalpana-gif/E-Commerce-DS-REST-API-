@@ -36,20 +36,6 @@ public class CartController {
 
 
     }
-//
-//    @PostMapping("/checkCartItems/{id}/{customerId}")
-//    public Cart checkcart(@PathVariable String id, @PathVariable ("customerId")String CID){
-//
-//        return cartService.avoidrepeat(id);
-//
-//
-//    }
-
-
-//    @GetMapping("/GetCartItems")
-//    public List<Product> getAll() {
-//        return cartService.getAlProducts("C001");
-//    }
 
     ///////////////////////////////////////////////////////////////////////////////////////////////
     @GetMapping("/GetCartItems/{id1}")
