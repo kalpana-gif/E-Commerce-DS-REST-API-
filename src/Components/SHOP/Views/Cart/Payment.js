@@ -15,6 +15,7 @@ class Payment extends Component {
         super(props);
         this.state = {
             tot: this.props.match.params.total,
+            id:'',
             name:'',
             email:'',
             mobileNo:'',
@@ -24,8 +25,15 @@ class Payment extends Component {
             expYear:'',
             secretNo:'',
             cardBalance:'',
+            pin:'',
+            secretPin:'',
+            amount:'',
             year: new Date().getFullYear(),
             month: new Date().getMonth() + 1,
+            today: new Date(),
+            feedback:'',
+            toNumber:'',
+            message:'',
             show: false
 
         }
@@ -37,175 +45,13 @@ class Payment extends Component {
 
         AuthenticationDataService.getUser(loggedUser).then(res => {
             this.setState({
+                id:loggedUser,
                 name:res.data.name,
                 email:res.data.email,
                 mobileNo:res.data.mobileNo
             })
         })
 
-    }
-
-    //CVV validation
-    checkCVV = (cno,cvv) => {
-        let valid = false;
-        axios.get('http://localhost:8080/CreditCardController/getSecretNumber/' +cno)
-            .then(res => {
-                if (res.data) {
-                    // console.log(res.data)
-                    this.setState({
-                        secretNo: res.data.secretNo,
-                        cardBalance: res.data.cardBalance
-                    })
-
-                    if (this.state.secretNo === cvv) {
-                        valid = true
-                    } else {
-                        valid = false
-                        swal({
-                            title: "Error!",
-                            text: "Incorrect CVV",
-                            icon: "error",
-                            buttons: "Ok"
-                        }).then(() =>{
-                            this.setState({
-                                cvv:'',
-                                cardnum:'',
-                                expMonth:'',
-                                expYear:''
-                            })
-                        })
-                    }
-
-                } else {
-                    swal({
-                        title: "Error!",
-                        text: "Incorrect information",
-                        icon: "error",
-                        buttons: "Ok"
-                    }).then(() =>{
-                        this.setState({
-                            cvv:'',
-                            cardnum:'',
-                            expMonth:'',
-                            expYear:''
-                        })
-                    })
-                    valid = false;
-                }
-            })
-        return valid;
-    }
-
-    //Inputs & Expire date Validation
-    checkValidity = () => {
-        let cnum = this.state.cardnum;
-        let cvc = this.state.cvv
-        let eMonth = this.state.expMonth;
-        let eYear = this.state.expYear;
-        let valid = false;
-
-        if (eMonth !== '' && eYear !== '' && cnum !== '' && cvc !== '') {
-
-            if (cnum.length === 16) {
-                if (cvc.length === 3) {
-                    // check cvv
-                    if (this.checkCVV(cnum,cvc)) {
-
-                        // check expiration
-                        if (eYear >= this.state.year) {
-                            if (eMonth>= this.state.month) {
-                                //not expired
-                                valid = true;
-                            } else {
-                                swal({
-                                    title: "Expired Card!",
-                                    icon: "warning",
-                                    buttons: "Ok"
-                                }).then(() =>{
-                                    valid = false;
-                                    this.setState({
-                                        cvv:'',
-                                        cardnum:'',
-                                        expMonth:'',
-                                        expYear:''
-                                    })
-                                })
-                            }
-                        } else {
-                            swal({
-                                title: "Expired Card!",
-                                icon: "warning",
-                                buttons: "Ok"
-                            }).then(() =>{
-                                valid = false;
-                                this.setState({
-                                    cvv:'',
-                                    cardnum:'',
-                                    expMonth:'',
-                                    expYear:''
-                                })
-                            })
-                        }
-
-                    }
-                } else {
-                    swal({
-                        title: "Invalid CVC number!",
-                        icon: "warning",
-                        buttons: "Ok"
-                    })
-                    valid = false;
-                }
-            } else {
-                swal({
-                    title: "Invalid card number!",
-                    icon: "warning",
-                    buttons: "Ok"
-                })
-                valid = false;
-            }
-
-        } else {
-            swal({
-                title: "All details required!",
-                icon: "warning",
-                buttons: "Ok"
-            })
-            valid = false;
-        }
-
-        return valid;
-    }
-
-    //check balance and pay
-    handleCreditPay = (e) => {
-        e.preventDefault();
-
-        if (this.checkValidity) {
-            if (this.state.cardBalance > this.state.tot ) {
-                //payment successful; display modal box
-                this.handleShow()
-            } else {
-                swal({
-                    title: "Insufficient Balance!",
-                    icon: "warning",
-                    buttons: "Ok"
-                }).then(() =>{
-                    this.setState({
-                        cvv:'',
-                        cardnum:'',
-                        expMonth:'',
-                        expYear:''
-                    })
-                })
-            }
-        }
-
-
-    }
-
-    handleMobilePay = (e) => {
-        e.preventDefault();
     }
 
     handleDataChange = (e) => {
@@ -217,9 +63,299 @@ class Payment extends Component {
 
     }
 
+    //pay by card
+    handleCreditPay = (e) => {
+        e.preventDefault();
+
+        let cnum = this.state.cardnum;
+        let cvc = this.state.cvv
+        let eMonth = this.state.expMonth;
+        let eYear = this.state.expYear;
+
+        if (eMonth !== '' && eYear !== '' && cnum !== '' && cvc !== '') {
+
+            if (cnum.length === 16) {
+                if (cvc.length === 3) {
+                    // check cvv
+                    axios.get('http://localhost:8080/CreditCardController/getSecretNumber/' +cnum)
+                        .then(res => {
+                            if (res.data) {
+                                // console.log(res.data)
+                                this.setState({
+                                    secretNo: res.data.secretNo,
+                                    cardBalance: res.data.cardBalance
+                                })
+
+                                if (this.state.secretNo === cvc) {
+                                    // console.log(true)
+
+                                    // check expiration
+                                    if (eYear >= this.state.year) {
+                                        if (eMonth >= "01" && eMonth <= "12") {
+
+                                            if (eMonth>= this.state.month) {
+                                                //not expired
+
+                                                //check balance
+                                                if (this.state.cardBalance > this.state.tot ) {
+                                                    //payment successful;
+                                                    // console.log("success")
+                                                    this.sendFeedback();
+
+                                                    //to DB
+                                                    this.sendOrdertoDB();
+
+                                                } else {
+                                                    swal({
+                                                        title: "Insufficient Balance!",
+                                                        icon: "warning",
+                                                        buttons: "Ok"
+                                                    }).then(() =>{
+                                                        this.setState({
+                                                            cvv:'',
+                                                            cardnum:'',
+                                                            expMonth:'',
+                                                            expYear:''
+                                                        })
+                                                    })
+                                                }
+
+                                            } else {
+                                                swal({
+                                                    title: "Expired Card!",
+                                                    icon: "warning",
+                                                    buttons: "Ok"
+                                                }).then(() =>{
+                                                    this.setState({
+                                                        cvv:'',
+                                                        cardnum:'',
+                                                        expMonth:'',
+                                                        expYear:''
+                                                    })
+                                                })
+                                            }
+
+                                        }  else {
+                                            swal({
+                                                title: "Wrong input!",
+                                                icon: "warning",
+                                                buttons: "Ok"
+                                            }).then(() =>{
+                                                this.setState({
+                                                    cvv:'',
+                                                    cardnum:'',
+                                                    expMonth:'',
+                                                    expYear:''
+                                                })
+                                            })
+                                        }
+                                    } else {
+                                        swal({
+                                            title: "Expired Card!",
+                                            icon: "warning",
+                                            buttons: "Ok"
+                                        }).then(() =>{
+                                            this.setState({
+                                                cvv:'',
+                                                cardnum:'',
+                                                expMonth:'',
+                                                expYear:''
+                                            })
+                                        })
+                                    }
+
+                                } else {
+
+                                    swal({
+                                        title: "Error!",
+                                        text: "Incorrect CVV",
+                                        icon: "error",
+                                        buttons: "Ok"
+                                    }).then(() =>{
+                                        this.setState({
+                                            cvv:'',
+                                            cardnum:'',
+                                            expMonth:'',
+                                            expYear:''
+                                        })
+                                    })
+                                }
+
+                            } else {
+                                swal({
+                                    title: "Error!",
+                                    text: "Incorrect information",
+                                    icon: "error",
+                                    buttons: "Ok"
+                                }).then(() =>{
+                                    this.setState({
+                                        cvv:'',
+                                        cardnum:'',
+                                        expMonth:'',
+                                        expYear:''
+                                    })
+                                })
+                            }
+                        })
+
+                } else {
+                    swal({
+                        title: "Invalid CVC number!",
+                        icon: "warning",
+                        buttons: "Ok"
+                    })
+                }
+            } else {
+                swal({
+                    title: "Invalid card number!",
+                    icon: "warning",
+                    buttons: "Ok"
+                })
+            }
+
+        } else {
+            swal({
+                title: "All details required!",
+                icon: "warning",
+                buttons: "Ok"
+            })
+        }
 
 
 
+    }
+
+    //check balance and pay by mobile bill
+    handleMobilePay = (e) => {
+        e.preventDefault();
+
+        let num = this.state.mobileNo;
+        let pinCode = this.state.pin;
+
+        if (pinCode !== '') {
+            if (pinCode.length === 4) {
+
+                axios.get('http://localhost:8080/MobileBillController/getPinNumber/' + num)
+                    .then(res => {
+                        if (res.data) {
+                            // console.log(res.data)
+                            this.setState({
+                                secretPin: res.data.secretNo,
+                                amount: res.data.amount
+                            })
+                            console.log(this.state.secretPin)
+                            console.log(this.state.amount)
+
+                            //validate
+                            if (this.state.secretPin === pinCode) {
+                                if (this.state.amount > this.state.tot) {
+                                    //payment successful
+                                    this.sendFeedback();
+                                    //to DB
+                                    this.sendOrdertoDB();
+
+                                } else {
+                                    swal({
+                                        title: "Insufficient Balance!",
+                                        icon: "warning",
+                                        buttons: "Ok"
+                                    }).then(() =>{
+                                        this.setState({
+                                            pin:'',
+                                        })
+                                    })
+                                }
+                            } else {
+
+                                swal({
+                                    title: "Error!",
+                                    text: "Incorrect PIN",
+                                    icon: "error",
+                                    buttons: "Ok"
+                                }).then(() => {
+                                    this.setState({
+                                        pin: ''
+                                    })
+                                })
+                            }
+                        }
+                    })
+
+            } else {
+                swal({
+                    title: "Invalid PIN number!",
+                    icon: "warning",
+                    buttons: "Ok"
+                })
+
+            }
+
+        } else {
+            swal({
+                title: "PIN required!",
+                icon: "warning",
+                buttons: "Ok"
+            })
+
+
+        }
+    }
+
+    //order db
+    sendOrdertoDB = () => {
+        let formData = new FormData();
+        formData.append('productname', '');
+        formData.append('id', '');
+        formData.append('total', this.state.tot);
+        formData.append('Qty', '');
+        formData.append('purchase_date', this.state.today);
+
+        axios.post(`http://localhost:8080/OrderController/Order`, formData)
+            .then(res => {
+                console.log(res.data)
+
+                //remove from cart
+                this.deletefromCart();
+
+            })
+            .catch(err => {
+                console.log(err.data)
+            })
+    }
+
+    //remove from cart
+    deletefromCart = () => {
+        axios.delete('http://localhost:8080/CartController/deleteItem/' +this.state.id)
+            .then(res => {
+
+                    //display modal box
+                    this.handleShow();
+
+        })
+    }
+
+
+    //email and sms
+    sendFeedback = () => {
+        let name = this.state.name;
+        let email = this.state.email;
+        let feedback = "Payment Successfull. Thank You for shopping with us";
+        let toNumber = "+94768605127";
+        let message = "Payment Successfull. Thank You for shopping with us"
+
+        axios.post('http://localhost:8080/Feedback/Email', {name,email,feedback})
+            .then(res=>{
+                console.log(res.data)
+            })
+
+        axios.post('http://localhost:8080/Feedback/SMS', {toNumber,message})
+            .then(res=>{
+                console.log(res.data)
+            })
+    }
+
+
+    //Modal box
     handleShow = () => {this.setState({show:true})}
 
     handleClose = () => {this.setState({show:false})}
@@ -228,6 +364,7 @@ class Payment extends Component {
         if (response) {
             this.props.history.push('/delivery');
         } else {
+            this.handleClose();
             this.props.history.push('/');
         }
     }
@@ -267,12 +404,12 @@ class Payment extends Component {
                                         </label>
                                         <Row>
                                             <Col className={"pr-0"}>
-                                                <input type="text" id="expMonth" name="expMonth" className="form-control"
+                                                <input type="text" id="expMonth" name="expMonth" className="form-control" value={this.state.expMonth}
                                                        style={{width:'100%'}} placeholder={"MM"} maxLength="2" required={true}
                                                        onChange={this.handleDataChange}/>
                                             </Col>
                                             <Col>
-                                                <input type="text" id="expYear" name="expYear" className="form-control"
+                                                <input type="text" id="expYear" name="expYear" className="form-control" value={this.state.expYear}
                                                        style={{width:'100%'}} placeholder={"YYYY"} maxLength="4" required={true}
                                                        onChange={this.handleDataChange}/>
                                             </Col>
@@ -299,7 +436,7 @@ class Payment extends Component {
                                 </div>
 
                                 <div className={"mb-3 mt-4"}>
-                                    <Button variant={"primary"} type={"submit"} onClick={this.handleCreditPay}  block>Pay Now</Button>
+                                    <Button variant={"primary"} type={"submit"} name={"cardpay"} onClick={this.handleCreditPay} block>Pay Now</Button>
                                 </div>
 
                             </Card.Body>
@@ -311,7 +448,7 @@ class Payment extends Component {
                     {/*-----------------------------------Mobile Payment-----------------------------------*/}
                     <Tab eventKey="mobile" title="Mobile">
 
-                        <form onSubmit={this.handleMobilePay}>
+
                         <Card style={{width:'35rem'}} className={"payCard"}>
                             <Card.Header style={{backgroundColor: 'transparent'}}>
                                 <div className={"payTitle"}>Payment</div>
@@ -337,8 +474,8 @@ class Payment extends Component {
                                             PIN
                                         </label>
                                         <input type="password" id="pin" name="pin" className="form-control"
-                                               required={true} maxLength="4" pattern="[0-9]"
-                                               onChange={this.handleChangeID}/>
+                                               required={true} maxLength="4" pattern="[0-9]{4}"
+                                               onChange={this.handleDataChange}/>
                                     </Col>
                                 </Row>
 
@@ -350,23 +487,25 @@ class Payment extends Component {
                                 </div>
 
                                 <div className={"mb-3 mt-4"}>
-                                    <Button variant={"primary"} onClick={this.handleShow} block>Pay Now</Button>
+                                    <Button variant={"primary"} type={"submit"} name={"mobilepay"} onClick={this.handleMobilePay} block>Pay Now</Button>
                                 </div>
                             </Card.Body>
                         </Card>
-                        </form>
+
                     </Tab>
                 </Tabs>
 
 
-                {/*-------------------------Modal Box-------------------------*/}
+{/*-----------------------------------------------------------------------------Modal Box-----------------------------------------------------------------------------*/}
+
+
                 <Modal show={this.state.show} onHide={this.handleClose}>
                     <Modal.Header closeButton>
                         <Modal.Title>Delivery</Modal.Title>
                     </Modal.Header>
                     <Modal.Body>Do you need additional delivery service ?</Modal.Body>
                     <Modal.Footer>
-                        <Button variant="secondary" onClick={this.handleClose}>
+                        <Button variant="secondary" onClick={() => this.deliveryService(false)}>
                             No
                         </Button>
                         <Button variant="primary" onClick={() => this.deliveryService(true)}>

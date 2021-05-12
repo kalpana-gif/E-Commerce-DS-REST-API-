@@ -37,13 +37,10 @@ class ShoppingCart extends Component {
 
     getCartItemsbyId() {
 
-
         axios.get('http://localhost:8080/CartController/GetCartItems/' + this.state.id1).then(response => {
-
             this.setState({
                 Product: response.data,
             });
-
 
             this.state.Product.forEach(product => {
                 this.setState({
@@ -55,11 +52,12 @@ class ShoppingCart extends Component {
 
         })
 
+
     }
 
     checkout = (total) => {
         //send total to payment component
-        console.log("value:"+total)
+        // console.log("value:"+total)
         this.props.history.push(`/Payment/${total}`)
     }
 
@@ -89,10 +87,11 @@ class ShoppingCart extends Component {
                     'Deleted!',
                     'Your file has been deleted.',
                     'success',
-                    axios.delete('http://localhost:8080/CartController/deleteItem/' + id).then(response => {
-                        console.log(response.data)
-                        this.getCartItemsbyId();
-                    })
+                    axios.delete('http://localhost:8080/CartController/deleteItemAuto/' + id)
+                        .then(response => {
+                            console.log(response.data)
+                            this.getCartItemsbyId();
+                        }),
 
                 )
                 this.setState({
@@ -115,7 +114,7 @@ class ShoppingCart extends Component {
 
     render() {
 
-        const Product = this.state;
+        const {Product} = this.state;
 
         return (
 
@@ -130,6 +129,12 @@ class ShoppingCart extends Component {
                                     </thead>
 
                                     {
+                                        this.state.Product.length === 0 ?
+                                            <tr className={"cartRow"}>
+                                                <div className={"mt-5 text-center"}>Your Cart is Empty</div>
+                                            </tr>
+
+                                    : [
                                         Product.map(Product =>
                                             <tbody key={Product.id}>
                                             <tr className={"cartRow"}>
@@ -148,7 +153,7 @@ class ShoppingCart extends Component {
                                                 <td style={{verticalAlign: 'middle'}}>
                                                     {/*<QTY/>*/}
                                                     <Button variant={"danger"} className={"itemBtn"}
-                                                            onClick={this.deleteItem.bind(this, Product.qty)}>
+                                                            onClick={this.deleteItem.bind(this, Product.id)}>
                                                         <FontAwesomeIcon icon={faTrash}/>&nbsp; Remove
                                                     </Button>
                                                 </td>
@@ -156,6 +161,8 @@ class ShoppingCart extends Component {
                                             </tbody>
 
                                         )
+                                        ]
+
                                     }
 
 
@@ -174,7 +181,8 @@ class ShoppingCart extends Component {
 
                             <div className={"text-center"}>
                                 <Button className={"orderBtn"} variant={"primary"}
-                                        onClick={() => this.checkout(this.state.total)}>
+                                        onClick={() => this.checkout(this.state.total)}
+                                        disabled={this.state.Product.length === 0} >
                                     CHECKOUT
                                 </Button>
                             </div>
