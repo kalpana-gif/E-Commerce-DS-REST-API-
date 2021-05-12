@@ -7,6 +7,7 @@ import '../ShopAdmin/ShopAdmin.css';
 import swal from "sweetalert";
 import AuthenticationService from "../../../Authentication/AuthenticationService";
 import AuthenticationDataService from "../../../Authentication/AuthenticationDataService";
+import moment from "moment";
 
 
 class Payment extends Component {
@@ -15,25 +16,25 @@ class Payment extends Component {
         super(props);
         this.state = {
             tot: this.props.match.params.total,
-            id:'',
-            name:'',
-            email:'',
-            mobileNo:'',
+            id: '',
+            name: '',
+            email: '',
+            mobileNo: '',
             cardnum: '',
-            cvv:'',
-            expMonth:'',
-            expYear:'',
-            secretNo:'',
-            cardBalance:'',
-            pin:'',
-            secretPin:'',
-            amount:'',
+            cvv: '',
+            expMonth: '',
+            expYear: '',
+            secretNo: '',
+            cardBalance: '',
+            pin: '',
+            secretPin: '',
+            amount: '',
             year: new Date().getFullYear(),
             month: new Date().getMonth() + 1,
-            today: new Date(),
-            feedback:'',
-            toNumber:'',
-            message:'',
+            today: moment(new Date()).format('YYYY-MM-DD'),
+            feedback: '',
+            toNumber: '',
+            message: '',
             show: false
 
         }
@@ -45,10 +46,10 @@ class Payment extends Component {
 
         AuthenticationDataService.getUser(loggedUser).then(res => {
             this.setState({
-                id:loggedUser,
-                name:res.data.name,
-                email:res.data.email,
-                mobileNo:res.data.mobileNo
+                id: loggedUser,
+                name: res.data.name,
+                email: res.data.email,
+                mobileNo: res.data.mobileNo
             })
         })
 
@@ -77,7 +78,7 @@ class Payment extends Component {
             if (cnum.length === 16) {
                 if (cvc.length === 3) {
                     // check cvv
-                    axios.get('http://localhost:8080/CreditCardController/getSecretNumber/' +cnum)
+                    axios.get('http://localhost:8080/CreditCardController/getSecretNumber/' + cnum)
                         .then(res => {
                             if (res.data) {
                                 // console.log(res.data)
@@ -90,76 +91,60 @@ class Payment extends Component {
                                     // console.log(true)
 
                                     // check expiration
-                                    if (eYear >= this.state.year) {
-                                        if (eMonth >= "01" && eMonth <= "12") {
+                                    if (eMonth >= "01" && eMonth <= "12") {
 
-                                            if (eMonth>= this.state.month) {
-                                                //not expired
+                                        if (eMonth >= this.state.month && eYear >= this.state.year) {
+                                            //not expired
 
-                                                //check balance
-                                                if (this.state.cardBalance > this.state.tot ) {
-                                                    //payment successful;
-                                                    // console.log("success")
-                                                    this.sendFeedback();
+                                            //check balance
+                                            if (this.state.cardBalance > this.state.tot) {
+                                                //payment successful;
+                                                // console.log("success")
+                                                this.sendFeedback();
 
-                                                    //to DB
-                                                    this.sendOrdertoDB();
-
-                                                } else {
-                                                    swal({
-                                                        title: "Insufficient Balance!",
-                                                        icon: "warning",
-                                                        buttons: "Ok"
-                                                    }).then(() =>{
-                                                        this.setState({
-                                                            cvv:'',
-                                                            cardnum:'',
-                                                            expMonth:'',
-                                                            expYear:''
-                                                        })
-                                                    })
-                                                }
+                                                //to DB
+                                                this.sendOrdertoDB();
 
                                             } else {
                                                 swal({
-                                                    title: "Expired Card!",
+                                                    title: "Insufficient Balance!",
                                                     icon: "warning",
                                                     buttons: "Ok"
-                                                }).then(() =>{
+                                                }).then(() => {
                                                     this.setState({
-                                                        cvv:'',
-                                                        cardnum:'',
-                                                        expMonth:'',
-                                                        expYear:''
+                                                        cvv: '',
+                                                        cardnum: '',
+                                                        expMonth: '',
+                                                        expYear: ''
                                                     })
                                                 })
                                             }
 
-                                        }  else {
+                                        } else {
                                             swal({
-                                                title: "Wrong input!",
+                                                title: "Expired Card!",
                                                 icon: "warning",
                                                 buttons: "Ok"
-                                            }).then(() =>{
+                                            }).then(() => {
                                                 this.setState({
-                                                    cvv:'',
-                                                    cardnum:'',
-                                                    expMonth:'',
-                                                    expYear:''
+                                                    cvv: '',
+                                                    cardnum: '',
+                                                    expMonth: '',
+                                                    expYear: ''
                                                 })
                                             })
                                         }
                                     } else {
                                         swal({
-                                            title: "Expired Card!",
+                                            title: "Wrong Input!",
                                             icon: "warning",
                                             buttons: "Ok"
-                                        }).then(() =>{
+                                        }).then(() => {
                                             this.setState({
-                                                cvv:'',
-                                                cardnum:'',
-                                                expMonth:'',
-                                                expYear:''
+                                                cvv: '',
+                                                cardnum: '',
+                                                expMonth: '',
+                                                expYear: ''
                                             })
                                         })
                                     }
@@ -171,12 +156,12 @@ class Payment extends Component {
                                         text: "Incorrect CVV",
                                         icon: "error",
                                         buttons: "Ok"
-                                    }).then(() =>{
+                                    }).then(() => {
                                         this.setState({
-                                            cvv:'',
-                                            cardnum:'',
-                                            expMonth:'',
-                                            expYear:''
+                                            cvv: '',
+                                            cardnum: '',
+                                            expMonth: '',
+                                            expYear: ''
                                         })
                                     })
                                 }
@@ -187,12 +172,12 @@ class Payment extends Component {
                                     text: "Incorrect information",
                                     icon: "error",
                                     buttons: "Ok"
-                                }).then(() =>{
+                                }).then(() => {
                                     this.setState({
-                                        cvv:'',
-                                        cardnum:'',
-                                        expMonth:'',
-                                        expYear:''
+                                        cvv: '',
+                                        cardnum: '',
+                                        expMonth: '',
+                                        expYear: ''
                                     })
                                 })
                             }
@@ -222,10 +207,9 @@ class Payment extends Component {
         }
 
 
-
     }
 
-    //check balance and pay by mobile bill
+    //pay by mobile bill
     handleMobilePay = (e) => {
         e.preventDefault();
 
@@ -259,9 +243,9 @@ class Payment extends Component {
                                         title: "Insufficient Balance!",
                                         icon: "warning",
                                         buttons: "Ok"
-                                    }).then(() =>{
+                                    }).then(() => {
                                         this.setState({
-                                            pin:'',
+                                            pin: '',
                                         })
                                     })
                                 }
@@ -305,7 +289,7 @@ class Payment extends Component {
     sendOrdertoDB = () => {
         let formData = new FormData();
         formData.append('productname', '');
-        formData.append('id', '');
+        formData.append('id', this.state.id);
         formData.append('total', this.state.tot);
         formData.append('Qty', '');
         formData.append('purchase_date', this.state.today);
@@ -325,13 +309,13 @@ class Payment extends Component {
 
     //remove from cart
     deletefromCart = () => {
-        axios.delete('http://localhost:8080/CartController/deleteItem/' +this.state.id)
+        axios.delete('http://localhost:8080/CartController/deleteItem/' + this.state.id)
             .then(res => {
 
-                    //display modal box
-                    this.handleShow();
+                //display modal box
+                this.handleShow();
 
-        })
+            })
     }
 
 
@@ -343,26 +327,31 @@ class Payment extends Component {
         let toNumber = "+94768605127";
         let message = "Payment Successfull. Thank You for shopping with us"
 
-        axios.post('http://localhost:8080/Feedback/Email', {name,email,feedback})
-            .then(res=>{
+        axios.post('http://localhost:8080/Feedback/Email', {name, email, feedback})
+            .then(res => {
                 console.log(res.data)
             })
 
-        axios.post('http://localhost:8080/Feedback/SMS', {toNumber,message})
-            .then(res=>{
+        axios.post('http://localhost:8080/Feedback/SMS', {toNumber, message})
+            .then(res => {
                 console.log(res.data)
             })
     }
 
 
     //Modal box
-    handleShow = () => {this.setState({show:true})}
+    handleShow = () => {
+        this.setState({show: true})
+    }
+    //Modal box
+    handleClose = () => {
+        this.setState({show: false})
+    }
 
-    handleClose = () => {this.setState({show:false})}
-
+    //delivery
     deliveryService = (response) => {
         if (response) {
-            this.props.history.push('/delivery');
+            this.props.history.push(`/delivery/`+this.state.tot);
         } else {
             this.handleClose();
             this.props.history.push('/');
@@ -372,29 +361,33 @@ class Payment extends Component {
     render() {
         return (
 
-            <Container className={"my-5 py-4"} style={{width:'36.9rem'}}>
+            <Container className={"my-5 py-4"} style={{width: '36.9rem'}}>
 
                 {/*-----------------------------------Credit Card-----------------------------------*/}
                 <Tabs defaultActiveKey="credit" id="uncontrolled-tab-example">
                     <Tab eventKey="credit" title="Credit Card">
 
-                        <Card style={{width:'35rem'}} className={"payCard"}>
-                            <Card.Header style={{backgroundColor: 'transparent'}}><div className={"payTitle"}>Payment</div></Card.Header>
+                        <Card style={{width: '35rem'}} className={"payCard"}>
+                            <Card.Header style={{backgroundColor: 'transparent'}}>
+                                <div className={"payTitle"}>Payment</div>
+                            </Card.Header>
                             <Card.Body>
                                 <div className={"mb-3"}>
                                     <label htmlFor="cardholder" className="grey-text">
                                         Card Holder Name
                                     </label>
-                                    <input type="text" id="cardholder" name="cardholder" className="form-control" value={this.state.name} disabled/>
+                                    <input type="text" id="cardholder" name="cardholder" className="form-control"
+                                           value={this.state.name} disabled/>
                                 </div>
 
                                 <div className={"mb-3"}>
                                     <label htmlFor="cardnum" className="grey-text">
                                         Card Number
                                     </label>
-                                    <input type="text" id="cardnum" name="cardnum" className="form-control" required={true}
+                                    <input type="text" id="cardnum" name="cardnum" className="form-control"
+                                           required={true}
                                            pattern="[0-9]{16}" maxLength="16" value={this.state.cardnum}
-                                           onChange={this.handleDataChange} />
+                                           onChange={this.handleDataChange}/>
                                 </div>
 
                                 <Row className={"mb-3"}>
@@ -404,13 +397,17 @@ class Payment extends Component {
                                         </label>
                                         <Row>
                                             <Col className={"pr-0"}>
-                                                <input type="text" id="expMonth" name="expMonth" className="form-control" value={this.state.expMonth}
-                                                       style={{width:'100%'}} placeholder={"MM"} maxLength="2" required={true}
+                                                <input type="text" id="expMonth" name="expMonth"
+                                                       className="form-control" value={this.state.expMonth}
+                                                       style={{width: '100%'}} placeholder={"MM"} maxLength="2"
+                                                       required={true}
                                                        onChange={this.handleDataChange}/>
                                             </Col>
                                             <Col>
-                                                <input type="text" id="expYear" name="expYear" className="form-control" value={this.state.expYear}
-                                                       style={{width:'100%'}} placeholder={"YYYY"} maxLength="4" required={true}
+                                                <input type="text" id="expYear" name="expYear" className="form-control"
+                                                       value={this.state.expYear}
+                                                       style={{width: '100%'}} placeholder={"YYYY"} maxLength="4"
+                                                       required={true}
                                                        onChange={this.handleDataChange}/>
                                             </Col>
                                         </Row>
@@ -432,11 +429,13 @@ class Payment extends Component {
                                     <label htmlFor="email" className="grey-text">
                                         Email Address
                                     </label>
-                                    <input type="email" id="cmail" name="mail" className="form-control" value={this.state.email} disabled />
+                                    <input type="email" id="cmail" name="mail" className="form-control"
+                                           value={this.state.email} disabled/>
                                 </div>
 
                                 <div className={"mb-3 mt-4"}>
-                                    <Button variant={"primary"} type={"submit"} name={"cardpay"} onClick={this.handleCreditPay} block>Pay Now</Button>
+                                    <Button variant={"primary"} type={"submit"} name={"cardpay"}
+                                            onClick={this.handleCreditPay} block>Pay Now</Button>
                                 </div>
 
                             </Card.Body>
@@ -444,12 +443,11 @@ class Payment extends Component {
                     </Tab>
 
 
-
                     {/*-----------------------------------Mobile Payment-----------------------------------*/}
                     <Tab eventKey="mobile" title="Mobile">
 
 
-                        <Card style={{width:'35rem'}} className={"payCard"}>
+                        <Card style={{width: '35rem'}} className={"payCard"}>
                             <Card.Header style={{backgroundColor: 'transparent'}}>
                                 <div className={"payTitle"}>Payment</div>
                             </Card.Header>
@@ -458,7 +456,8 @@ class Payment extends Component {
                                     <label htmlFor="pname" className="grey-text">
                                         Name
                                     </label>
-                                    <input type="text" id="pname" name="pname" className="form-control" value={this.state.name} disabled/>
+                                    <input type="text" id="pname" name="pname" className="form-control"
+                                           value={this.state.name} disabled/>
                                 </div>
 
                                 <Row className={"mb-3"}>
@@ -466,7 +465,8 @@ class Payment extends Component {
                                         <label htmlFor="pnumber" className="grey-text">
                                             Mobile Number
                                         </label>
-                                        <input type="text" id="pnumber" name="pnumber" className="form-control" value={this.state.mobileNo} disabled/>
+                                        <input type="text" id="pnumber" name="pnumber" className="form-control"
+                                               value={this.state.mobileNo} disabled/>
                                     </Col>
 
                                     <Col md={5}>
@@ -483,11 +483,13 @@ class Payment extends Component {
                                     <label htmlFor="email" className="grey-text">
                                         Email Address
                                     </label>
-                                    <input type="email" id="mmail" name="email" className="form-control" value={this.state.email} disabled />
+                                    <input type="email" id="mmail" name="email" className="form-control"
+                                           value={this.state.email} disabled/>
                                 </div>
 
                                 <div className={"mb-3 mt-4"}>
-                                    <Button variant={"primary"} type={"submit"} name={"mobilepay"} onClick={this.handleMobilePay} block>Pay Now</Button>
+                                    <Button variant={"primary"} type={"submit"} name={"mobilepay"}
+                                            onClick={this.handleMobilePay} block>Pay Now</Button>
                                 </div>
                             </Card.Body>
                         </Card>
@@ -496,7 +498,7 @@ class Payment extends Component {
                 </Tabs>
 
 
-{/*-----------------------------------------------------------------------------Modal Box-----------------------------------------------------------------------------*/}
+                {/*-----------------------------------------------------------------------------Modal Box-----------------------------------------------------------------------------*/}
 
 
                 <Modal show={this.state.show} onHide={this.handleClose}>

@@ -101,7 +101,7 @@ class UploadItems extends Component {
                     this.props.history.push('/ViewAll/');
 
                     swal({
-                        title: "Great !",
+                        title: "Done !",
                         text: "Item Added Successfully!",
                         icon: "success",
                         timmer: 1,
@@ -110,13 +110,11 @@ class UploadItems extends Component {
                 })
         }
 
-        console.log(this.state.image)
+        // console.log(this.state.image)
     }
 
     // photo upload part remove photo
     onchangeFile(e) {
-
-        // if (URL.createObjectURL(e.target.files[0]) !== ' ') {
 
         if (e.target.files.length) {
             this.setState({
@@ -144,10 +142,8 @@ class UploadItems extends Component {
 
         return (
             <Container className={"my-5 py-4"}>
-                {/*<div className={"adminCardTitle text-center"}>Add Item</div>*/}
-
                 <Card className={"adminCard"}>
-                    <div className={"text-center adminCardTitle"}>Add Product</div>
+                    <div className={"text-center adminCardTitle"}>Add Item</div>
                     <Card.Body className={"m-3"}>
                         <form onSubmit={this.handleSubmit}>
                             <Row>
@@ -234,9 +230,9 @@ class UploadItems extends Component {
                                         <select className="browser-default custom-select" id="catogeory"
                                                 name="catogeory" onChange={this.handleChangeCatogory}>
                                             <option>Choose your option</option>
-                                            <option value="Clothing">Men Clothing</option>
-                                            <option value="Protection">Women Clothing</option>
-                                            <option value="Books">Shoes</option>
+                                            <option value="Men">Men Clothing</option>
+                                            <option value="Women">Women Clothing</option>
+                                            <option value="Shoes">Shoes</option>
                                         </select>
                                     </div>
 

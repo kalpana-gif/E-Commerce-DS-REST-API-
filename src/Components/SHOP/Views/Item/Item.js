@@ -6,7 +6,7 @@ import {withRouter} from "react-router";
 import * as Swal from "sweetalert2";
 import AuthenticationService from "../../../Authentication/AuthenticationService";
 import {Button, Card, Row} from "react-bootstrap";
-import {faHeart, faShoppingCart} from "@fortawesome/free-solid-svg-icons";
+import {faShoppingCart} from "@fortawesome/free-solid-svg-icons";
 import {FontAwesomeIcon} from "@fortawesome/react-fontawesome";
 
 
@@ -38,20 +38,20 @@ class EcommercePage extends React.Component {
         console.log(id)
         console.log(this.state.customerId)
 
-        Swal.fire({
-            position: 'top-center',
-            icon: 'success',
-            title: 'Check the Cart ,Successfully Added',
-            showConfirmButton: false,
-            timer: 1500
-        })
+        if(AuthenticationService.loggedUserRole === "buyer") {
+            Swal.fire({
+                position: 'top-center',
+                icon: 'success',
+                title: 'Check the Cart ,Successfully Added',
+                showConfirmButton: false,
+                timer: 1500
+            })
 
-        axios.post(`http://localhost:8080/CartController/CartItems/${id}/${this.state.customerId}`);
+            axios.post(`http://localhost:8080/CartController/CartItems/${id}/${this.state.customerId}`);
 
-        axios.post('http://localhost:8080/CartController/saveCustomer/' + this.state.customerId);
-        console.log("current user" + this.state.customerId)
-
-
+            axios.post('http://localhost:8080/CartController/saveCustomer/' + this.state.customerId);
+            console.log("current user" + this.state.customerId)
+        }
     }
 
     getAllProductsFromProduct() {
@@ -81,7 +81,7 @@ class EcommercePage extends React.Component {
                 <Row className="justify-content-md-center">
                     {this.state.Product.slice(0,this.state.visible).map( item =>
 
-                        <Card style={{width: '21rem', border:'none'}} className={"card-div mx-3"} key={item.id}>
+                        <Card style={{width: '21rem', border:'none'}} className={"card-div mx-3 mb-5"} key={item.id}>
                             <Card.Img variant={"top"} className={"card-item-img"}
                                       src={`data:image/jpeg;base64,${item.picture}`} />
                             <div className={"text-center btn-grp-div"}>
@@ -89,9 +89,6 @@ class EcommercePage extends React.Component {
                                     <Button variant={"none"} className={"card-item-button"}
                                             onClick={this.buyBytnclicked.bind(this,item.id)} >
                                         <FontAwesomeIcon icon={faShoppingCart}/>
-                                    </Button>
-                                    <Button variant={"none"} className={"card-item-button"}>
-                                        <FontAwesomeIcon icon={faHeart}/>
                                     </Button>
                                 </div>
                             </div>

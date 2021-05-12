@@ -115,7 +115,6 @@ class Search extends Component {
     render() {
         if (this.state.Product === false) {
 
-            console.log("HHH")
             return (
                 <div>
                     {/*--------------------------Navbar--------------------------*/}
@@ -189,9 +188,9 @@ class Search extends Component {
                     </div>
 
                     {/*--------------------------Search or Filter Results--------------------------*/}
-                    <div className={"my-5 px-2"}>
+                    <div className={"my-5 px-2 py-4"}>
 
-                        <Row className="justify-content-md-center">
+                        <Row className="justify-content-md-center mb-5">
                             {this.state.Item.slice(0, this.state.visible).map(product =>
 
                                 <Card style={{width: '21rem', border: 'none'}} className={"card-div mx-3"}
@@ -200,11 +199,11 @@ class Search extends Component {
                                               src={`data:image/jpeg;base64,${product.picture}`}/>
                                     <div className={"text-center btn-grp-div"}>
                                         <div className={"btn-inner-div"}>
-                                            <Button variant={"none"} className={"card-product-button"}
+                                            <Button variant={"none"} className={"card-item-button"}
                                                     onClick={this.buyBytnclicked.bind(this, product.id)}>
                                                 <FontAwesomeIcon icon={faShoppingCart}/>
                                             </Button>
-                                            <Button variant={"none"} className={"card-product-button"}>
+                                            <Button variant={"none"} className={"card-item-button"}>
                                                 <FontAwesomeIcon icon={faHeart}/>
                                             </Button>
                                         </div>

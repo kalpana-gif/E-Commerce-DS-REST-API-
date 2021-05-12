@@ -6,7 +6,6 @@ import swal from "sweetalert";
 import * as Swal from "sweetalert2";
 import Button from "react-bootstrap/Button";
 
-import 'jspdf-autotable';
 import './ShopAdmin.css';
 import {Badge, ButtonGroup, Card, Container, Image, InputGroup, Table} from "react-bootstrap";
 import {FontAwesomeIcon} from "@fortawesome/react-fontawesome";
@@ -14,7 +13,6 @@ import {
     faFilter,
     faPen,
     faSearch,
-    faStar,
     faTimes,
     faTrashAlt
 } from "@fortawesome/free-solid-svg-icons";
@@ -28,8 +26,6 @@ class productList extends Component {
         super();
 
         this.state = {
-            // add data to the row using constructor\
-
             Product: [],
             id: '',
             brand: '',
@@ -39,45 +35,7 @@ class productList extends Component {
             searchclick: false,
             filterType: 'All',
             filterRate: 'All',
-            search: '',
-
-
-            //columns declare here
-            columns: [
-                {
-                    label: 'ProductID',
-                    field: 'id',
-                },
-
-                {
-                    label: '',
-                    field: 'img',
-                },
-                {
-                    label: <strong>Product</strong>,
-                    field: 'product'
-                },
-                {
-                    label: <strong>Brand</strong>,
-                    field: 'brand'
-                },
-                {
-                    label: <strong>Price</strong>,
-                    field: 'price'
-                },
-                {
-                    label: <strong>QTY</strong>,
-                    field: 'qty'
-                },
-                {
-                    label: '',
-                    field: 'button'
-                },
-                {
-                    label: '',
-                    field: 'buttonEdit'
-                }
-            ]
+            search: ''
         }
         this.getAllProducts = this.getAllProducts.bind(this);
         this.deleteItem = this.deleteItem.bind(this);
@@ -210,26 +168,6 @@ class productList extends Component {
         }
     }
 
-    // filterByRate = () => {
-    //
-    //     if (this.state.filterType !== '') {
-    //         if (this.state.filterType === 'All') {
-    //             this.getAllProducts();
-    //         } else {
-    //             axios.get('http://localhost:8080/productController/filter/' + this.state.filterType)
-    //                 .then(res => {
-    //                     if (res.data.length > 0) {
-    //                         this.setState({
-    //                             Product: res.data
-    //                         })
-    //                     } else {
-    //                         Swal.fire('No items found')
-    //                     }
-    //                 })
-    //         }
-    //     }
-    // }
-
     clearFilterData = () => {
         this.setState({
             filterType: 'All',
@@ -252,7 +190,7 @@ class productList extends Component {
 
         return (
 
-            <Container className={"my-5 py-4"}>
+            <Container className={"my-5 py-4"} style={{width: '70rem'}}>
                 <Card className={"adminCard"}>
                     <div className={"text-center adminCardTitle"}>Item List</div>
                     <Card.Body className={"m-3"}>
@@ -262,7 +200,7 @@ class productList extends Component {
                                 <div className={"row"}>
                                     <div className={"col text-center"} style={{backgroundColor: '#fff'}}>
                                         <Button variant={"dark"} type={"submit"} onClick={this.addItem}>
-                                            <FontAwesomeIcon icon={faPlusSquare}/>&nbsp; Add
+                                            <FontAwesomeIcon icon={faPlusSquare}/>&nbsp; Add Item
                                         </Button>
 
                                     </div>
@@ -289,31 +227,7 @@ class productList extends Component {
                                     </InputGroup>
                                 </div>
 
-                                <div className={"col pl-0"}>
-                                    <InputGroup>
-                                        <select className={"form-control"} value={this.state.filterRate}
-                                                onChange={this.handleFilterDataChange}>
-                                            <option value={"All"}>Rating</option>
-                                            <option value={"5"}>5 stars</option>
-                                            <option value={"4"}>4 stars</option>
-                                            <option value={"3"}>3 stars</option>
-                                            <option value={"2"}>2 stars</option>
-                                            <option value={"1"}>1 stars</option>
-                                        </select>
-                                        <InputGroup.Append>
-                                            <ButtonGroup>
-                                                <Button variant="info" style={{width: '40px', borderRadius: '0'}}>
-                                                    <FontAwesomeIcon icon={faFilter}/>
-                                                </Button>
-                                                <Button variant="danger" style={{width: '40px'}}>
-                                                    <FontAwesomeIcon icon={faTimes}/>
-                                                </Button>
-                                            </ButtonGroup>
-                                        </InputGroup.Append>
-                                    </InputGroup>
-                                </div>
-
-                                <div className={"col-4 px-0"}>
+                                <div className={"col-5 px-0"}>
                                     <div className={"input-group"}>
                                         <input className={"form-control"} type={"text"} value={this.state.search}
                                                placeholder={"Search items"} onChange={this.handleSearch} onClick={this.clearSearch}/>
@@ -336,10 +250,9 @@ class productList extends Component {
                                     <th> </th>
                                     <th>NAME</th>
                                     <th>ID</th>
-                                    <th>PRICE</th>
                                     <th className={"text-center"}>TYPE</th>
+                                    <th>PRICE</th>
                                     <th className={"text-center"}>QTY</th>
-                                    <th className={"text-center"}>RATING</th>
                                     <th className={"text-center"}>ACTION</th>
                                 </tr>
                                 </thead>
@@ -362,7 +275,6 @@ class productList extends Component {
                                                         </td>
                                                         <td style={{verticalAlign: 'middle'}}>{row.productname}</td>
                                                         <td style={{verticalAlign: 'middle'}}>{row.id}</td>
-                                                        <td style={{verticalAlign: 'middle'}}>LKR {row.price}.00</td>
                                                         <td style={{verticalAlign: 'middle', textAlign: 'center'}}>
                                                             {
                                                                 row.catogeory === 'Men' ?
@@ -374,15 +286,12 @@ class productList extends Component {
                                                             }
 
                                                         </td>
+                                                        <td style={{verticalAlign: 'middle'}}>LKR {row.price}.00</td>
+
                                                         <td style={{
                                                             verticalAlign: 'middle',
                                                             textAlign: 'center'
                                                         }}>{row.qty}</td>
-                                                        <td style={{verticalAlign: 'middle', textAlign: 'center'}}>
-                                                            <FontAwesomeIcon icon={faStar}/><FontAwesomeIcon icon={faStar}/><FontAwesomeIcon
-                                                            icon={faStar}/>
-                                                            <FontAwesomeIcon icon={faStar}/><FontAwesomeIcon icon={faStar}/>
-                                                        </td>
                                                         <td style={{
                                                             verticalAlign: 'middle',
                                                             textAlign: 'center',

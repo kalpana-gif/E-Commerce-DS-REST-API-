@@ -36,14 +36,14 @@ class Header extends Component {
         const loggedUserName = AuthenticationService.loggedUserId();
         const loggedUser = AuthenticationService.loggedUserName();
 
-        let loggedAsOperator = false;
-        let loggedAsStudent = false;
+        let loggedAsSeller= false;
+        let loggedAsBuyer = false;
 
         if (loggedUserRole != null && loggedUserRole === 'seller') {
-            loggedAsOperator = true;
+            loggedAsSeller= true;
         }
         if (loggedUserRole != null && loggedUserRole === 'buyer') {
-            loggedAsStudent = true;
+            loggedAsBuyer = true;
         }
 
 
@@ -51,7 +51,8 @@ class Header extends Component {
             <div>
                 <Navbar expand="lg" className={"navigation-bar"}>
                     <Link className="brand-name navbar-brand" to="/">Loire Valley</Link>
-                    {loggedAsOperator &&
+
+                    {loggedAsSeller&&
                     <div>
                         <Badge variant="dark" className={"admin-label"} >Admin</Badge>
                     </div>
@@ -60,9 +61,9 @@ class Header extends Component {
                     <Navbar.Collapse id="basic-navbar-nav">
                         <Nav className="ml-auto">
 
-                            {loggedAsOperator &&
+                            {loggedAsSeller&&
                                 <>
-                                    <Link className="navbar-icon account-label" to="/" style={{textDecoration:'none'}}><FontAwesomeIcon icon={faHome}className={"mr-2"}/></Link>
+                                    <Link className="navbar-icon account-label" to="/" style={{textDecoration:'none'}}><FontAwesomeIcon icon={faHome} className={"mr-2"}/></Link>
                                     <NavDropdown title={<FontAwesomeIcon icon={faBars}/>}
                                                  id="nav-dropdown">
                                         <Link className="dropdown-item" to="/AddItems"><FontAwesomeIcon
@@ -75,7 +76,7 @@ class Header extends Component {
                                 </>
                             }
 
-                            {loggedAsStudent &&
+                            {loggedAsBuyer &&
                                 <>
                                     <Link className="navbar-icon account-label" to="/" style={{textDecoration:'none'}}><FontAwesomeIcon icon={faHome}  className={"mr-2"}/>Home</Link>
                                     <Link className="navbar-icon account-label" style={{textDecoration:'none'}}  to="/ShoppingCart">
@@ -87,13 +88,13 @@ class Header extends Component {
                                 <>
                                     <Link className="navbar-icon account-label" to="/" style={{textDecoration:'none'}} ><FontAwesomeIcon icon={faHome} className={"mr-2"}/></Link>
                                     <Link className="navbar-icon" to="/"><FontAwesomeIcon icon={faShoppingCart} onClick={() => this.alert()} /></Link>
-                                    <Link className="navbar-icon" to="/login"><FontAwesomeIcon icon={faUser}/></Link>
+                                    <Link className="navbar-icon" to="/myAccount"><FontAwesomeIcon icon={faUser}/></Link>
                                 </> }
 
                             {isUserLoggedIn &&
                                 <>
                                     <div className={"navbar-icon account-label"}><FontAwesomeIcon icon={faUser} className={"mr-2"}/>Hi, {loggedUser}</div>
-                                    <Link className="navbar-icon account-label" to="/login" onClick={AuthenticationService.logout} style={{textDecoration:'none'}}><FontAwesomeIcon icon={faSignOutAlt}/> Logout</Link>
+                                    <Link className="navbar-icon account-label" to="/myAccount" onClick={AuthenticationService.logout} style={{textDecoration:'none'}}><FontAwesomeIcon icon={faSignOutAlt}/> Logout</Link>
                                 </>
                             }
                         </Nav>

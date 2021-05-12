@@ -1,35 +1,25 @@
 import React, {Component} from 'react';
-import {
-    MDBBtn,
-    MDBCard,
-    MDBCardBody,
-    MDBIcon, MDBNavLink,
-    MDBRow,
-    MDBTable,
-    MDBTableBody,
-    MDBTableHead,
-    MDBTooltip
-} from 'mdbreact';
 import 'sweetalert2/src/sweetalert2.scss';
-// import Swal from 'sweetalert2/dist/sweetalert2.js';js
 
 import axios from "axios";
 import swal from "sweetalert";
 
-import jsPDF from 'jspdf'; import 'jspdf-autotable';
-import moment from "moment";
+import './ShopAdmin.css';
+
+import {Card, Container, Table} from "react-bootstrap";
+import Button from "react-bootstrap/Button";
+import {FontAwesomeIcon} from "@fortawesome/react-fontawesome";
+import {faTrashAlt} from "@fortawesome/free-solid-svg-icons";
 
 
 
-class OrderList extends React.Component {
+class OrderList extends Component {
 
 
-    constructor() {
-        super();
+    constructor(props) {
+        super(props);
 
         this.state = {
-            // add data to the row using constructor\
-
             Order: [],
             order_id: '',
             product_id: '',
@@ -40,54 +30,12 @@ class OrderList extends React.Component {
             address: '',
             brand: '',
             purchase_date: '',
-            resultArray: [],
+            resultArray: []
 
-
-            //coulomns declare here
-            columns: [
-                {
-                    label: <strong>OrderID</strong>,
-                    field: 'order_id',
-                },
-                {
-                    label: <strong>Product_Id</strong>,
-                    field: 'product_id',
-                },
-                {
-                    label: <strong>Product</strong>,
-                    field: 'productname'
-                },
-                {
-                    label: <strong>Brand</strong>,
-                    field: 'brand'
-                },
-                {
-                    label: <strong>Amount</strong>,
-                    field: 'amount'
-                },
-                {
-                    label: <strong>QTY</strong>,
-                    field: 'amount'
-                },
-                {
-                    label: <strong>Details</strong>,
-                    field: 'detalis'
-                },
-                {
-                    label: <strong>Purchase_date</strong>,
-                    field: 'date'
-                },
-                {
-                    label: '',
-                    field: 'button'
-                },
-            ]
         }
         this.getAllProducts = this.getAllProducts.bind( this );
         this.deleteItem = this.deleteItem.bind( this );
         this.updateBtnclicked = this.updateBtnclicked.bind( this );
-        // this.generateReport = this.generateReport.bind(this);
-        // this.GetItems = this.GetItems.bind(this);
     }
 
     componentDidMount() {
@@ -96,7 +44,7 @@ class OrderList extends React.Component {
 
     getAllProducts() {
         axios.get( 'http://localhost:8080/OrderController/getAll' ).then( response => {
-
+            console.log(response.data)
             this.setState( {
                 Order: response.data
 
@@ -107,42 +55,11 @@ class OrderList extends React.Component {
         } )
     }
 
-    exportPDF = () => {
-        console.log( "SSSSSSSSSS" )
-
-
-        const unit = "pt";
-        const size = "A3"; // Use A1, A2, A3 or A4
-        const orientation = "portrait"; // portrait or landscape
-        const marginLeft = 40;
-        const doc = new jsPDF( orientation, unit, size );
-
-        // const jsPDF = require('jspdf');
-        // require('jspdf-autotable');
-
-        const title = "IFKF SHOP-Order Report ";
-        const headers = [["Order ID","Product_Id","Product","Brand","Amount","QTY", "Details(email)","Details(Address)", "Purchase_date"]];
-
-        const Order = this.state.Order.map( orderList => [orderList.order_id, orderList.product_id,orderList.productname,orderList.brand, orderList.total_amount, orderList.qty,orderList.email,orderList.address,orderList.purchase_date] );
-
-        let content = {
-            startY: 50,
-            head: headers,
-            body: Order
-        };
-        doc.setFontSize( 20 );
-        doc.text( title, marginLeft, 40 );
-        require('jspdf-autotable');
-        doc.autoTable( content );
-        doc.save( "IFKF_Shop_Order_Report "+moment().format("DD-MM-YYYY hh:mm:ss")+".pdf" )
-    }
-
 
     deleteItem(id) {
-        // console.log(id);
         swal( {
             title: "Are you sure?",
-            text: "Once deleted, you will not be able to recover this imaginary file!",
+            text: "Once deleted, you will not be able to recover this record!",
             icon: "warning",
             buttons: true,
             dangerMode: true,
@@ -150,16 +67,14 @@ class OrderList extends React.Component {
             .then( (willDelete) => {
                 if (willDelete) {
                     axios.delete( 'http://localhost:8080/OrderController/deleteItem/' + id ).then( response => {
+                        console.log(response.data)
                         this.getAllProducts();
-
                     } )
-                    swal( "Poof! Your imaginary file has been deleted!", {
+                    swal( "Record has been deleted!", {
                         icon: "success",
 
 
                     } );
-                } else {
-                    swal( "Your imaginary file is safe!" );
                 }
             } );
 
@@ -174,64 +89,70 @@ class OrderList extends React.Component {
 
     render() {
 
-        const rows = [];
-        const {columns, Order} = this.state;
-
-        {
-            Order.map( row => {
-                console.log( row );
-                return rows.push(
-                    {
-                        'o_id': row.order_id,
-                        'product_id': row.product_id,
-
-                        'product': [<h6 className="mt-3" key={new Date().getDate + 1}><strong>{row.product_id}</strong>
-                        </h6>,
-                            <p key={new
-                            Date().getDate} className="text-muted">{row.descriptions}</p>],
-                        'brand': row.brand,
-                        'amount': `Rs.${row.total_amount}`,
-                        'QTY': row.qty,
-                        'details': [<h6 className="mt-3" key={new Date().getDate + 1}><strong>{row.email}</strong>
-                        </h6>,
-                            <p key={new
-                            Date().getDate} className="text-muted">{row.address}</p>],
-                        'date': row.purchase_date,
-                        'button':
-                            <MDBTooltip placement="top">
-
-                                <MDBBtn color="danger" size="sm" onClick={this.deleteItem.bind( this, row.order_id )}>
-                                    <MDBIcon icon="trash"/>
-                                </MDBBtn>
-
-                                <div>Remove item</div>
-                            </MDBTooltip>,
-
-
-                    }
-                )
-            } );
-        }
-
+        const {Order} = this.state;
 
         return (
-            <div>
-                <MDBRow center={true} >
-                    <MDBCard style={{width: "82rem", marginTop: "2rem"}}>
-                        <MDBBtn color={"warning"} style={{color: 'white'}} onClick={() => this.exportPDF()}><MDBIcon far icon="file-pdf" /> Genrate A Report</MDBBtn>
-                        <MDBCardBody>
-                            <MDBTable className="product-table" striped hover responsive>
-                                <caption>List of All Product</caption>
-                                <MDBTableHead columns={columns}/>
-                                <MDBTableBody rows={rows}/>
-                            </MDBTable>
-                        </MDBCardBody>
-                    </MDBCard>
-                </MDBRow>
-            </div>
-        );
-    }
+            <Container className={"my-5 py-4"} style={{width: '60rem'}}>
+                <Card className={"adminCard"}>
+                    <div className={"text-center adminCardTitle"}>Order List</div>
+                    <Card.Body className={"m-3"}>
 
+                        <div className={"mb-5 table-responsive tableFixHead"}>
+
+                            <Table borderless hover>
+                                <thead>
+                                <tr className={"tableHeaders"}>
+                                    <th>ORDER ID</th>
+                                    <th>CUSTOMER ID</th>
+                                    <th>TOTAL AMOUNT</th>
+                                    <th>PURCHASE DATE</th>
+                                    <th> </th>
+                                </tr>
+                                </thead>
+                                <tbody>
+
+                                {
+                                    Order.length === 0 ?
+                                        <tr align="center">
+                                            <td colSpan="10"><h6 className={"mt-3"}>No records at the moment</h6></td>
+                                        </tr>
+
+                                        : [
+                                            Order.map(order => {
+                                                return (
+                                                    <tr className={"tableRow"} key={order.order_id}>
+                                                        <td style={{verticalAlign: 'middle'}}>{order.order_id}</td>
+                                                        <td style={{verticalAlign: 'middle'}}>{order.customer_id}</td>
+                                                        <td style={{verticalAlign: 'middle'}}>LKR {order.total_amount}.00</td>
+                                                        <td style={{verticalAlign: 'middle'}}>{order.purchase_date}</td>
+                                                        <td style={{
+                                                            verticalAlign: 'middle',
+                                                            textAlign: 'center',
+                                                            width: '50px'
+                                                        }}>
+                                                                <Button variant={"danger"} type={"submit"}
+                                                                        onClick={this.deleteItem.bind(this, order.order_id)}>
+                                                                    <FontAwesomeIcon icon={faTrashAlt}/>
+                                                                </Button>
+
+                                                        </td>
+                                                    </tr>
+                                                )
+                                            })
+
+                                        ]
+                                }
+
+
+                                </tbody>
+                            </Table>
+                        </div>
+
+                    </Card.Body>
+                </Card>
+            </Container>
+        )
+    }
 
 }
 
