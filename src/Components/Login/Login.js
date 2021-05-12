@@ -31,7 +31,7 @@ class Login extends Component {
                 response => {
                     if(response.data != null){
                         if(this.state.password === response.data.password){
-                            AuthenticationService.successfulLogin(response.data.userId, 'Name', response.data.role)
+                            AuthenticationService.successfulLogin(response.data.userId, response.data.name, response.data.role)
                             this.props.history.push("/")
                             this.setState({showSuccessMsg: true})
                             this.setState({hasLoginFailed: false})

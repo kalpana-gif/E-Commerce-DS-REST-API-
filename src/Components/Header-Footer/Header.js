@@ -3,29 +3,46 @@ import './Header.css';
 import {Navbar, Nav, NavDropdown, Badge} from 'react-bootstrap';
 import {FontAwesomeIcon} from '@fortawesome/react-fontawesome'
 import {
-    faSignOutAlt, faBars, faShoppingCart, faPlusSquare, faClipboardList, faListAlt, faUser
+    faSignOutAlt,
+    faBars,
+    faShoppingCart,
+    faPlusSquare,
+    faClipboardList,
+    faListAlt,
+    faUser,
+    faHome
 } from '@fortawesome/free-solid-svg-icons'
 import {Link} from 'react-router-dom';
 import {withRouter} from 'react-router'
 import AuthenticationService from '../Authentication/AuthenticationService';
+import swal from "sweetalert";
 
 
 class Header extends Component {
     state = {}
+
+    alert = () => {
+        swal({
+            title: "You need to Login!",
+            icon: "warning",
+            button: "Ok!",
+        });
+    }
 
     render() {
 
         const isUserLoggedIn = AuthenticationService.isUserLoggedIn();
         const loggedUserRole = AuthenticationService.loggedUserRole();
         const loggedUserName = AuthenticationService.loggedUserId();
+        const loggedUser = AuthenticationService.loggedUserName();
 
         let loggedAsOperator = false;
         let loggedAsStudent = false;
 
-        if (loggedUserRole != null && loggedUserRole === 'operator') {
+        if (loggedUserRole != null && loggedUserRole === 'seller') {
             loggedAsOperator = true;
         }
-        if (loggedUserRole != null && loggedUserRole === 'student') {
+        if (loggedUserRole != null && loggedUserRole === 'buyer') {
             loggedAsStudent = true;
         }
 
@@ -43,35 +60,42 @@ class Header extends Component {
                     <Navbar.Collapse id="basic-navbar-nav">
                         <Nav className="ml-auto">
 
-                            {!loggedAsOperator &&
-                                <Link className="navbar-icon" to="/"><FontAwesomeIcon icon={faShoppingCart}/></Link>
+                            {loggedAsOperator &&
+                                <>
+                                    <Link className="navbar-icon account-label" to="/" style={{textDecoration:'none'}}><FontAwesomeIcon icon={faHome}className={"mr-2"}/></Link>
+                                    <NavDropdown title={<FontAwesomeIcon icon={faBars}/>}
+                                                 id="nav-dropdown">
+                                        <Link className="dropdown-item" to="/AddItems"><FontAwesomeIcon
+                                            icon={faPlusSquare} className={"mr-2"}/> Add Products</Link>
+                                        <Link className="dropdown-item" to="/ViewAll"><FontAwesomeIcon icon={faListAlt} className={"mr-2"} /> View
+                                            Products</Link>
+                                        <Link className="dropdown-item" to="/OrderList"><FontAwesomeIcon
+                                            icon={faClipboardList} className={"mr-2"} /> Order List</Link>
+                                    </NavDropdown>
+                                </>
                             }
 
-                            {loggedAsOperator &&
-                            <NavDropdown title={<FontAwesomeIcon icon={faBars}/>}
-                                         id="nav-dropdown">
-                                <Link className="dropdown-item" to="/AddItems"><FontAwesomeIcon
-                                    icon={faPlusSquare} className={"mr-2"}/> Add Products</Link>
-                                <Link className="dropdown-item" to="/ViewAll"><FontAwesomeIcon icon={faListAlt} className={"mr-2"} /> View
-                                    Products</Link>
-                                <Link className="dropdown-item" to="/OrderList"><FontAwesomeIcon
-                                    icon={faClipboardList} className={"mr-2"} /> Order List</Link>
-                            </NavDropdown>  }
-
                             {loggedAsStudent &&
-                            <NavDropdown title={<FontAwesomeIcon icon={faBars}/>}
-                                         id="nav-dropdown">
-                                <Link className="dropdown-item" to="/ShoppingCart"><FontAwesomeIcon
-                                    icon={faShoppingCart} className={"mr-2"} />My Cart</Link>
-                            </NavDropdown>}
+                                <>
+                                    <Link className="navbar-icon account-label" to="/" style={{textDecoration:'none'}}><FontAwesomeIcon icon={faHome}  className={"mr-2"}/>Home</Link>
+                                    <Link className="navbar-icon account-label" style={{textDecoration:'none'}}  to="/ShoppingCart">
+                                        <FontAwesomeIcon icon={faShoppingCart} className={"mr-2"} />My Cart</Link>
+                                </>
+                            }
 
                             {!isUserLoggedIn &&
-                            <Link className="navbar-icon" to="/login"><FontAwesomeIcon icon={faUser}/></Link>}
-                            {/*TODO:*/}
-                            {isUserLoggedIn && <div className={"navbar-icon account-label"}><FontAwesomeIcon icon={faUser} className={"mr-2"}/>{loggedUserName}</div>}
-                            {isUserLoggedIn && <Link className="navbar-icon" to="/login" onClick={AuthenticationService.logout}>
-                                <FontAwesomeIcon icon={faSignOutAlt}/>
-                            </Link>}
+                                <>
+                                    <Link className="navbar-icon account-label" to="/" style={{textDecoration:'none'}} ><FontAwesomeIcon icon={faHome} className={"mr-2"}/></Link>
+                                    <Link className="navbar-icon" to="/"><FontAwesomeIcon icon={faShoppingCart} onClick={() => this.alert()} /></Link>
+                                    <Link className="navbar-icon" to="/login"><FontAwesomeIcon icon={faUser}/></Link>
+                                </> }
+
+                            {isUserLoggedIn &&
+                                <>
+                                    <div className={"navbar-icon account-label"}><FontAwesomeIcon icon={faUser} className={"mr-2"}/>Hi, {loggedUser}</div>
+                                    <Link className="navbar-icon account-label" to="/login" onClick={AuthenticationService.logout} style={{textDecoration:'none'}}><FontAwesomeIcon icon={faSignOutAlt}/> Logout</Link>
+                                </>
+                            }
                         </Nav>
                     </Navbar.Collapse>
                 </Navbar>
