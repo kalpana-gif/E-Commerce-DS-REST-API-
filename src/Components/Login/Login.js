@@ -1,9 +1,9 @@
 import React, { Component } from 'react';
-import { Form, Button, Alert, Container } from 'react-bootstrap';
+import {Form, Button, Container, Card} from 'react-bootstrap';
 import './Login.css'
-import { Link } from 'react-router-dom';
 import AuthenticationService from '../Authentication/AuthenticationService';
 import AthenticationDataService from '../Authentication/AuthenticationDataService';
+import { withRouter } from 'react-router-dom';
 
 class Login extends Component {
 
@@ -52,48 +52,43 @@ class Login extends Component {
     
     render() {
 
+        return (
 
-        return ( 
-            <Container style={{width:600}}>
-                <br></br>
-                <br></br>
-                <br></br>
-                <br></br>
-            <div className="form">
-                <Form>
-                    <Form.Label style={{fontWeight:"bold", fontSize:30, paddingBottom:20}}>LOGIN</Form.Label>
-                    {this.state.hasLoginFailed && <Alert variant="danger">Invalid credentials</Alert>}
-                    
+            <Container>
+                <Card style={{border:'none'}}>
+                    <Card.Body>
+                        <form>
+                            <div className={"mb-3"}>
+                                <label htmlFor="userId" className="grey-text">
+                                    User ID
+                                </label>
+                                <input type="text" name="userId" className="form-control" placeholder={"ex: John Mayer"}
+                                       value={this.state.userId} required={true} onChange={this.handleChange}/>
+                            </div>
 
-                    <Form.Group controlId="formBasicEmail">
-                        <Form.Label>User ID</Form.Label>
-                        <Form.Control type="text" placeholder="User ID" name="userId" value={this.state.userId} onChange={this.handleChange} />
-                    </Form.Group>
+                            <div className={"mb-3"}>
+                                <label htmlFor="password" className="grey-text">
+                                    Password
+                                </label>
+                                <input type="password" name="password" className="form-control" placeholder="Password"
+                                       value={this.state.password} required={true} onChange={this.handleChange} />
+                                <Form.Text className="text-muted">
+                                    &nbsp;We'll never share your passwords with anyone else.
+                                </Form.Text>
+                            </div>
 
-                    <Form.Group controlId="formBasicPassword">
-                        <Form.Label>Password</Form.Label>
-                        <Form.Control type="password" placeholder="Password" name="password" value={this.state.password} onChange={this.handleChange} />
-                        <Form.Text className="text-muted">
-                        We'll never share your passwords with anyone else.
-                        </Form.Text>
-                    </Form.Group>
-                    <Form.Group controlId="formBasicCheckbox">
-                        <Form.Check type="checkbox" label="Remeber me" />
-                    </Form.Group>
-                    <Button variant="dark" onClick={this.loginClicked} style={{fontWeight:600, fontSize:20}}>
-                        Login
-                    </Button>
-                    <Form.Group>
-                        <Link to="forgotpassword" style={{textDecoration:"none"}}><p style={{marginTop:10, color:"red"}}>Forgot password ?</p></Link>
-                    </Form.Group>
-                </Form>
-            </div>
-                <br></br>
-                <br></br>
-                <br></br>
+                            <div className={"mb-3 mt-4"}>
+                                <Button variant={"dark"} name={"signup"} block onClick={this.loginClicked}
+                                        style={{fontSize:20, borderRadius:'0'}} className={"py-3"} >Login</Button>
+                            </div>
+                        </form>
+                    </Card.Body>
+                </Card>
+
             </Container>
+
          );
     }
 }
  
-export default Login;
+export default withRouter (Login);
