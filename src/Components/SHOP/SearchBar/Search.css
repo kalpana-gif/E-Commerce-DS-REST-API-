@@ -1,0 +1,68 @@
+@import url('https://fonts.googleapis.com/css2?family=Lexend:wght@100;300;400;500;600;700&display=swap');
+
+.search {
+    padding: 20px;
+}
+
+.searchButton {
+    color: #9a9a9a;
+    background: transparent;
+    border: 2px solid #9a9a9a;
+    border-radius: 0 50px 50px 0;
+    border-left: none;
+    padding: 10px 20px;
+    z-index: 2;
+    cursor: pointer;
+}
+
+.searchInput {
+    width: 500px;
+    font-family: 'Lexend', sans-serif;
+    font-weight: 400;
+    border: 2px solid #9a9a9a;
+    border-radius: 50px 0 0 50px;
+    border-right: none;
+    color: #000000;
+    padding: 10px 20px;
+    z-index: 3;
+    cursor: pointer;
+    background-color: rgba(240, 241, 243, 0.3);
+}
+
+.searchInput:focus {
+    outline: none;
+    cursor: text;
+}
+
+.searchButton:hover {
+    color: #000000;
+}
+
+.searchButton:focus {
+    outline: none;
+}
+
+/* sub nav item */
+.sub-nav-item {
+    color: #5c5c5c;
+    font-family: 'Lexend', sans-serif;
+    font-weight: 500;
+    font-size: 1em;
+    padding: 5px 0;
+    margin: 20px 50px 20px 0;
+    border-radius: 0;
+    border-bottom: 2px solid rgba(240, 241, 243, 0.3);
+}
+
+/* sub nav item */
+.sub-nav-item:hover {
+    color: #000000;
+    border-bottom: 2px solid #000000;
+}
+
+/* sub nav item */
+.sub-nav-item:focus {
+    color: #000000;
+    border-bottom: 2px solid #000000;
+    box-shadow: none !important;
+}
