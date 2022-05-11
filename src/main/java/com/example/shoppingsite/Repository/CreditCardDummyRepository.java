@@ -8,6 +8,6 @@ import org.springframework.data.repository.query.Param;
 public interface CreditCardDummyRepository extends JpaRepository<CreditCardDummy, String> {
 
 
-    @Query(value = "SELECT * from CreditCardDummy where cardNo=:cardNo ", nativeQuery = true)
+    @Query(value = "SELECT * from credit_card_dummy where card_no=:cardNo ", nativeQuery = true)
     CreditCardDummy getSecretNumber(@Param("cardNo") String cardNo);
 }

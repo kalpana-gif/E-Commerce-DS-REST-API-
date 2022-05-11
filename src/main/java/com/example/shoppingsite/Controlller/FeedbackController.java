@@ -3,21 +3,17 @@ package com.example.shoppingsite.Controlller;
 import com.example.shoppingsite.Model.EmailConfiguration;
 import com.example.shoppingsite.Model.EmailFeedback;
 import com.example.shoppingsite.Model.SMSConfiguration;
-
 import com.twilio.Twilio;
 import com.twilio.rest.api.v2010.account.Message;
 import com.twilio.type.PhoneNumber;
-
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.mail.SimpleMailMessage;
 import org.springframework.mail.javamail.JavaMailSenderImpl;
 import org.springframework.validation.BindingResult;
-import org.springframework.web.bind.annotation.PostMapping;
-import org.springframework.web.bind.annotation.RequestBody;
-import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.RestController;
+import org.springframework.web.bind.annotation.*;
 
 @RestController
+@CrossOrigin(origins = "http://localhost:3000")
 @RequestMapping("/Feedback")
 public class FeedbackController {
 
@@ -30,7 +26,7 @@ public class FeedbackController {
 
     //for SMS function
     private final static String accountSid = "AC86d43d0e3ffae901bb1a5ef20cf18353";
-    private final static String token = "c915f053f6a76e3e7fc8df7a02e34112";
+    private final static String token = "95b00ba973274062193082ef775cca1b";
 
 
     @PostMapping("/Email")

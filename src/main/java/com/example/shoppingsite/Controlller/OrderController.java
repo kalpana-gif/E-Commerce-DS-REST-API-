@@ -19,14 +19,13 @@ public class OrderController {
 
     @PostMapping("/Order")
     public OrderList addOrder(@RequestParam("productname") String productname, @RequestParam("id") String id,
-                              @RequestParam("brand") String brand, @RequestParam("total") String total,
-                              @RequestParam("description") String description, @RequestParam("email") String email,
-                              @RequestParam("Address") String Address, @RequestParam("purchase_date") String purchase_date, @RequestParam("Qty") String qty) {
+                              @RequestParam("total") String total, @RequestParam("purchase_date") String purchase_date,
+                              @RequestParam("Qty") String qty) {
 
         OrderList order = new OrderList();
         order.setTotal_amount(total);
         order.setProductname(productname);
-        order.setProduct_id(id);
+        order.setCustomer_id(id);
         order.setPurchase_date(purchase_date);
         order.setQty(qty);
 

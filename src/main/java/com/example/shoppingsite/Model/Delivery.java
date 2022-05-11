@@ -6,6 +6,7 @@ import javax.persistence.*;
 public class Delivery {
 
     @Id
+    @GeneratedValue
     private int deliveryID;
     private String customerID;
     private String address;

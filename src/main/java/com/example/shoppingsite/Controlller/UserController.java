@@ -10,11 +10,10 @@ import org.springframework.web.bind.annotation.*;
 import java.util.List;
 import java.util.Optional;
 
-
-@CrossOrigin(origins = "http://localhost:3000")
 @RestController
+@CrossOrigin(origins = "http://localhost:3000")
 @RequestMapping("/ShoppingSite") //  <-
-//NOTE!!! URLS HAVE BEEN CHANGED ,REMEMBER TO CHANGE TO MAKE THE FRONTEND WORK....
+//TODO:NOTE!!! URLS HAVE BEEN CHANGED ,REMEMBER TO CHANGE TO MAKE THE FRONTEND WORK....
 
 public class UserController {
 
@@ -51,11 +50,5 @@ public class UserController {
         return new ResponseEntity<User>(user, HttpStatus.OK);
     }
 
-
-    @GetMapping("/findmax")
-    public User getUserID() {
-
-        return userRepository.findTopByOrderByUserIdDesc();
-    }
 }
 
